@@ -2,150 +2,121 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KaiAI Level 7 PRO</title>
+
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 *{box-sizing:border-box;font-family:system-ui}
-body{margin:0;background:#f5f6fa}
+body{margin:0;background:#f4f6fb}
 
 /* SIDEBAR */
 .sidebar{
-position:fixed;
-top:0;
-right:0;
-width:260px;
-height:100vh;
-background:#fff;
-border-left:1px solid #eee;
-padding:20px;
-transform:translateX(100%);
-transition:.25s;
-z-index:999;
-overflow:auto
+position:fixed;right:0;top:0;height:100vh;width:270px;
+background:#fff;border-left:1px solid #eee;padding:20px;
+transform:translateX(100%);transition:.25s;z-index:99;overflow:auto
 }
 .sidebar.open{transform:translateX(0)}
-
-.logo{font-weight:900;font-size:20px;margin-bottom:20px}
-
+.logo{font-size:22px;font-weight:900;margin-bottom:20px}
 .navbtn{
-width:100%;
-padding:12px;
-margin:6px 0;
-border:none;
-border-radius:10px;
-background:#f3f4f6;
-font-weight:800;
-cursor:pointer
+display:block;width:100%;padding:12px;margin:6px 0;border:none;
+border-radius:10px;background:#f3f4f6;font-weight:800;cursor:pointer
 }
 
 /* TOPBAR */
 .topbar{
-background:#fff;
-padding:12px 20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+background:#fff;padding:12px 18px;
+display:flex;justify-content:space-between;align-items:center;
 border-bottom:1px solid #eee
 }
-
-.menuBtn{
-background:#111;
-color:#fff;
-border:none;
-padding:10px 14px;
-border-radius:8px;
-font-weight:800;
-cursor:pointer
-}
+.menuBtn{background:#111;color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:800}
 
 /* APP */
-.app{padding:20px}
+.app{padding:18px}
 .card{
-background:#fff;
-padding:16px;
-border-radius:14px;
-margin-bottom:14px;
-box-shadow:0 2px 6px rgba(0,0,0,.05)
+background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;
+box-shadow:0 3px 8px rgba(0,0,0,.05)
 }
-h3{margin:0 0 8px}
-
-/* BUTTONS */
-.btn{
-background:#111;
-color:#fff;
-padding:10px 12px;
-border:none;
-border-radius:8px;
-margin:4px;
-font-weight:800;
-cursor:pointer
-}
-
-/* INPUT */
-input{
-width:100%;
-padding:10px;
-margin:6px 0;
-border:1px solid #ddd;
-border-radius:8px
-}
+.btn{background:#111;color:#fff;border:none;padding:10px 12px;border-radius:8px;margin:4px;font-weight:800}
+input{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 <div class="logo">KaiAI</div>
-
 <button class="navbtn" onclick="go('dashboard')">דשבורד</button>
 <button class="navbtn" onclick="go('customers')">לקוחות</button>
 <button class="navbtn" onclick="go('docs')">חשבוניות</button>
 <button class="navbtn" onclick="go('expenses')">הוצאות</button>
 <button class="navbtn" onclick="go('reports')">דוחות</button>
-<button class="navbtn" onclick="go('settings')">עריכות</button>
 </div>
 
-<!-- TOPBAR -->
 <div class="topbar">
-<div><b>KaiAI CRM</b></div>
+<b>KaiAI CRM PRO</b>
 <button class="menuBtn" onclick="toggleMenu()">☰</button>
 </div>
 
-<!-- APP -->
 <div class="app" id="app"></div>
 
 <script>
+const app = document.getElementById("app")
+
+/* MENU */
+function toggleMenu(){sidebar.classList.toggle("open")}
+function closeMenu(){sidebar.classList.remove("open")}
+
+/* DATA */
 let customers = JSON.parse(localStorage.getItem("customers")||"[]")
 
-function toggleMenu(){
-document.getElementById("sidebar").classList.toggle("open")
+if(customers.length===0){
+customers = [
+{name:"יובל כהן",phone:"050-1111111",total:2400},
+{name:"דנה לוי",phone:"050-2222222",total:900},
+{name:"אלון מזרחי",phone:"050-3333333",total:1800},
+{name:"שחר ביטון",phone:"050-4444444",total:1200},
+{name:"מיכל פרץ",phone:"050-5555555",total:3500},
+{name:"עידו בר",phone:"050-6666666",total:2600},
+{name:"נועם אלקיים",phone:"050-7777777",total:1500},
+{name:"אור לוי",phone:"050-8888888",total:4200}
+]
+save()
 }
 
-function closeMenu(){
-document.getElementById("sidebar").classList.remove("open")
+function save(){
+localStorage.setItem("customers",JSON.stringify(customers))
 }
 
+/* NAV */
 function go(page){
 closeMenu()
-
 if(page==="dashboard") dashboard()
 if(page==="customers") customersPage()
 if(page==="docs") docsPage()
 if(page==="expenses") expensesPage()
 if(page==="reports") reportsPage()
-if(page==="settings") settingsPage()
 }
 
 /* DASHBOARD */
 function dashboard(){
+let income = customers.reduce((a,b)=>a+b.total,0)
+
 app.innerHTML=`
 <div class="card">
 <h3>דשבורד</h3>
-הכנסות החודש: ₪12,400<br>
-הוצאות: ₪3,200<br><br>
-🤖 KaiAI: מומלץ להעלות מחירים ב־5%
+הכנסות חודש: ₪${income}<br>
+הוצאות: ₪3,200<br>
+רווח: ₪${income-3200}
+</div>
+
+<div class="card">
+<h3>KaiAI המלצות</h3>
+• העלה מחיר ב־7%<br>
+• חזק לקוחות חוזרים<br>
+• שלח קמפיין וואטסאפ
 </div>`
 }
 
@@ -155,8 +126,8 @@ let list = customers.map(c=>`
 <div class="card">
 <b>${c.name}</b><br>
 ${c.phone}<br>
-<button class="btn" onclick="invoice('${c.name}')">חשבונית</button>
-<button class="btn" onclick="quote('${c.name}')">הצעת מחיר</button>
+סה"כ: ₪${c.total}<br>
+<button class="btn" onclick="invoice('${c.name}',${c.total})">חשבונית</button>
 </div>`).join("")
 
 app.innerHTML=`
@@ -170,28 +141,30 @@ ${list}`
 }
 
 function addCustomer(){
-let name=document.getElementById("name").value
-let phone=document.getElementById("phone").value
-customers.push({name,phone})
-localStorage.setItem("customers",JSON.stringify(customers))
+let name=name.value
+let phone=phone.value
+customers.push({name,phone,total:Math.floor(Math.random()*3000)+500})
+save()
 customersPage()
+}
+
+/* PDF */
+async function invoice(name,amount){
+const { jsPDF } = window.jspdf
+const doc = new jsPDF()
+
+doc.setFont("helvetica","bold")
+doc.text("חשבונית",105,20,null,null,"center")
+doc.text("לקוח: "+name,20,50)
+doc.text("סכום: ₪"+amount,20,70)
+doc.text("KaiAI CRM",20,100)
+
+doc.save("invoice_"+name+".pdf")
 }
 
 /* DOCS */
 function docsPage(){
-app.innerHTML=`
-<div class="card">
-<h3>חשבוניות</h3>
-לחץ על לקוח כדי ליצור
-</div>`
-}
-
-function invoice(name){
-alert("חשבונית נוצרה עבור "+name)
-}
-
-function quote(name){
-alert("הצעת מחיר נוצרה עבור "+name)
+app.innerHTML=`<div class="card">לחץ על לקוח כדי להוציא חשבונית</div>`
 }
 
 /* EXPENSES */
@@ -200,27 +173,20 @@ app.innerHTML=`
 <div class="card">
 <h3>הוצאות</h3>
 שכירות: ₪2000<br>
-ציוד: ₪500
+ציוד: ₪800<br>
+פרסום: ₪400
 </div>`
 }
 
 /* REPORTS */
 function reportsPage(){
+let best = customers.sort((a,b)=>b.total-a.total)[0]
+
 app.innerHTML=`
 <div class="card">
 <h3>דוחות</h3>
-רווח נקי: ₪9,200
-</div>`
-}
-
-/* SETTINGS */
-function settingsPage(){
-app.innerHTML=`
-<div class="card">
-<h3>עריכת מסמכים</h3>
-העלה לוגו<br>
-שנה כותרת חשבונית<br>
-עיצוב הצעת מחיר
+לקוח מוביל: ${best.name}<br>
+הכנסה: ₪${best.total}
 </div>`
 }
 
