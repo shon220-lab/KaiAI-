@@ -1,44 +1,94 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>KaiAI Level 7 PRO</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:#f6f7fb;display:flex;color:#111}
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f5f6fa}
 
 /* SIDEBAR */
 .sidebar{
-width:260px;background:#fff;height:100vh;position:fixed;right:0;top:0;
-border-left:1px solid #eee;padding:20px;box-shadow:-4px 0 20px rgba(0,0,0,.05)
+position:fixed;
+top:0;
+right:0;
+width:260px;
+height:100vh;
+background:#fff;
+border-left:1px solid #eee;
+padding:20px;
+transform:translateX(100%);
+transition:.25s;
+z-index:999;
+overflow:auto
 }
+.sidebar.open{transform:translateX(0)}
+
 .logo{font-weight:900;font-size:20px;margin-bottom:20px}
+
 .navbtn{
-width:100%;margin:6px 0;padding:10px;border:0;border-radius:10px;
-background:#f3f4f6;font-weight:800;cursor:pointer
+width:100%;
+padding:12px;
+margin:6px 0;
+border:none;
+border-radius:10px;
+background:#f3f4f6;
+font-weight:800;
+cursor:pointer
+}
+
+/* TOPBAR */
+.topbar{
+background:#fff;
+padding:12px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #eee
+}
+
+.menuBtn{
+background:#111;
+color:#fff;
+border:none;
+padding:10px 14px;
+border-radius:8px;
+font-weight:800;
+cursor:pointer
 }
 
 /* APP */
-.app{margin-right:280px;padding:25px;width:100%}
+.app{padding:20px}
 .card{
-background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;
-box-shadow:0 10px 24px rgba(0,0,0,.06)
+background:#fff;
+padding:16px;
+border-radius:14px;
+margin-bottom:14px;
+box-shadow:0 2px 6px rgba(0,0,0,.05)
 }
-.kpis{display:flex;gap:12px}
-.kpis .card{flex:1;text-align:center}
+h3{margin:0 0 8px}
 
-.primary{
-background:#111;color:#fff;border:0;padding:8px 12px;border-radius:8px;font-weight:800
+/* BUTTONS */
+.btn{
+background:#111;
+color:#fff;
+padding:10px 12px;
+border:none;
+border-radius:8px;
+margin:4px;
+font-weight:800;
+cursor:pointer
 }
-.small{color:#6b7280;font-size:13px}
-.todo li{margin:6px 0}
 
-/* MOBILE */
-@media(max-width:900px){
-.sidebar{width:200px}
-.app{margin-right:220px}
+/* INPUT */
+input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border:1px solid #ddd;
+border-radius:8px
 }
 </style>
 </head>
@@ -46,162 +96,135 @@ background:#111;color:#fff;border:0;padding:8px 12px;border-radius:8px;font-weig
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
-<div class="logo">KaiAI PRO</div>
-<button class="navbtn" onclick="nav('dash')">דשבורד</button>
-<button class="navbtn" onclick="nav('customers')">לקוחות</button>
-<button class="navbtn" onclick="nav('docs')">מסמכים</button>
-<button class="navbtn" onclick="nav('reports')">דוחות</button>
+<div class="sidebar" id="sidebar">
+<div class="logo">KaiAI</div>
+
+<button class="navbtn" onclick="go('dashboard')">דשבורד</button>
+<button class="navbtn" onclick="go('customers')">לקוחות</button>
+<button class="navbtn" onclick="go('docs')">חשבוניות</button>
+<button class="navbtn" onclick="go('expenses')">הוצאות</button>
+<button class="navbtn" onclick="go('reports')">דוחות</button>
+<button class="navbtn" onclick="go('settings')">עריכות</button>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+<div><b>KaiAI CRM</b></div>
+<button class="menuBtn" onclick="toggleMenu()">☰</button>
 </div>
 
 <!-- APP -->
 <div class="app" id="app"></div>
 
 <script>
-let customers=[]
-let invoices=[]
-let quotes=[]
-let revenue=0
+let customers = JSON.parse(localStorage.getItem("customers")||"[]")
 
-/* NAVIGATION */
-function nav(page){
-
-// DASHBOARD
-if(page==='dash'){
-app.innerHTML=`
-<div class="kpis">
-<div class="card"><b>₪${revenue}</b><div class="small">הכנסות</div></div>
-<div class="card"><b>${customers.length}</b><div class="small">לקוחות</div></div>
-<div class="card"><b>${invoices.length}</b><div class="small">חשבוניות</div></div>
-</div>
-
-<div class="card">
-<b>🤖 AI Insight</b>
-<div class="small">
-${revenue>0
-? "הכנסות בעלייה. שלח הצעות מחיר ללקוחות חוזרים."
-: "עדיין אין הכנסות — נסה לשלוח הצעת מחיר ראשונה."}
-</div>
-</div>
-
-<div class="card">
-<b>To-Do</b>
-<ul class="todo">
-<li>📞 להתקשר ללקוחות ישנים</li>
-<li>📤 לשלוח 3 הצעות מחיר</li>
-<li>⭐ לבקש ביקורות מלקוחות</li>
-</ul>
-</div>
-
-<div class="card">
-<b>פעולות מהירות</b><br><br>
-<button class="primary" onclick="addCustomer()">+ לקוח חדש</button>
-</div>
-`
+function toggleMenu(){
+document.getElementById("sidebar").classList.toggle("open")
 }
 
-// CUSTOMERS
-if(page==='customers'){
+function closeMenu(){
+document.getElementById("sidebar").classList.remove("open")
+}
+
+function go(page){
+closeMenu()
+
+if(page==="dashboard") dashboard()
+if(page==="customers") customersPage()
+if(page==="docs") docsPage()
+if(page==="expenses") expensesPage()
+if(page==="reports") reportsPage()
+if(page==="settings") settingsPage()
+}
+
+/* DASHBOARD */
+function dashboard(){
 app.innerHTML=`
 <div class="card">
-<h3>לקוחות</h3>
-<button class="primary" onclick="addCustomer()">+ הוסף לקוח</button>
-<div id="list"></div>
+<h3>דשבורד</h3>
+הכנסות החודש: ₪12,400<br>
+הוצאות: ₪3,200<br><br>
+🤖 KaiAI: מומלץ להעלות מחירים ב־5%
 </div>`
-renderCustomers()
 }
 
-// DOCUMENTS
-if(page==='docs'){
+/* CUSTOMERS */
+function customersPage(){
+let list = customers.map(c=>`
+<div class="card">
+<b>${c.name}</b><br>
+${c.phone}<br>
+<button class="btn" onclick="invoice('${c.name}')">חשבונית</button>
+<button class="btn" onclick="quote('${c.name}')">הצעת מחיר</button>
+</div>`).join("")
+
+app.innerHTML=`
+<div class="card">
+<h3>הוספת לקוח</h3>
+<input id="name" placeholder="שם">
+<input id="phone" placeholder="טלפון">
+<button class="btn" onclick="addCustomer()">שמור</button>
+</div>
+${list}`
+}
+
+function addCustomer(){
+let name=document.getElementById("name").value
+let phone=document.getElementById("phone").value
+customers.push({name,phone})
+localStorage.setItem("customers",JSON.stringify(customers))
+customersPage()
+}
+
+/* DOCS */
+function docsPage(){
 app.innerHTML=`
 <div class="card">
 <h3>חשבוניות</h3>
-${invoices.map(i=>`
-<div class="card">
-<b>${i.name}</b><br>
-₪${i.amount}<br>
-<span class="small">${i.date}</span>
-</div>`).join("") || "<div class='small'>אין עדיין</div>"}
-</div>
-
-<div class="card">
-<h3>הצעות מחיר</h3>
-${quotes.map(q=>`
-<div class="card">
-<b>${q.name}</b><br>
-₪${q.amount}<br>
-<span class="small">${q.date}</span>
-</div>`).join("") || "<div class='small'>אין עדיין</div>"}
-</div>
-`
+לחץ על לקוח כדי ליצור
+</div>`
 }
 
-// REPORTS
-if(page==='reports'){
+function invoice(name){
+alert("חשבונית נוצרה עבור "+name)
+}
+
+function quote(name){
+alert("הצעת מחיר נוצרה עבור "+name)
+}
+
+/* EXPENSES */
+function expensesPage(){
+app.innerHTML=`
+<div class="card">
+<h3>הוצאות</h3>
+שכירות: ₪2000<br>
+ציוד: ₪500
+</div>`
+}
+
+/* REPORTS */
+function reportsPage(){
 app.innerHTML=`
 <div class="card">
 <h3>דוחות</h3>
-<p>סה"כ הכנסות: ₪${revenue}</p>
-<p>לקוחות שנוספו: ${customers.length}</p>
-<p>חשבוניות: ${invoices.length}</p>
-<p>הצעות מחיר: ${quotes.length}</p>
-</div>
-`
-}
-}
-
-/* ADD CUSTOMER */
-function addCustomer(){
-let name=prompt("שם לקוח")
-if(!name)return
-customers.unshift({name})
-nav('customers')
-}
-
-/* RENDER CUSTOMERS */
-function renderCustomers(){
-let html=""
-customers.forEach(c=>{
-html+=`
-<div class="card">
-<b>${c.name}</b><br><br>
-<button onclick="quote('${c.name}')">הצעת מחיר</button>
-<button onclick="invoice('${c.name}')">חשבונית</button>
+רווח נקי: ₪9,200
 </div>`
-})
-document.getElementById("list").innerHTML=html
 }
 
-/* QUOTE */
-function quote(name){
-let amount=prompt("סכום הצעת מחיר")
-if(!amount)return
-quotes.unshift({
-name,
-amount,
-date:new Date().toLocaleDateString()
-})
-alert("📄 הצעת מחיר נשלחה")
-nav('docs')
+/* SETTINGS */
+function settingsPage(){
+app.innerHTML=`
+<div class="card">
+<h3>עריכת מסמכים</h3>
+העלה לוגו<br>
+שנה כותרת חשבונית<br>
+עיצוב הצעת מחיר
+</div>`
 }
 
-/* INVOICE */
-function invoice(name){
-let amount=prompt("סכום חשבונית")
-if(!amount)return
-revenue+=Number(amount)
-invoices.unshift({
-name,
-amount,
-date:new Date().toLocaleDateString()
-})
-alert("✅ חשבונית הופקה")
-nav('dash')
-}
-
-/* INIT */
-nav('dash')
+dashboard()
 </script>
-
 </body>
 </html>
