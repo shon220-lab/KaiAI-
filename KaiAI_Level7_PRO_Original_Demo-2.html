@@ -1,0 +1,1825 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CRM AI • PRO Demo (Level 7)</title>
+<style>
+:root{
+  --bg:#ffffff;
+  --bg2:#f7f8fb;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+
+  --blue:#579bfc;
+  --purple:#a855f7;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --teal:#14b8a6;
+  --pink:#fb7185;
+  --indigo:#6366f1;
+
+  --shadow:0 10px 30px rgba(17,24,39,.08);
+  --shadow2:0 18px 60px rgba(2,6,23,.16);
+  --r14:14px;
+  --r18:18px;
+  --r22:22px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Arial;
+  color:var(--text);
+  background:linear-gradient(180deg, var(--bg), var(--bg2));
+}
+a{color:inherit}
+
+@keyframes in{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes pop{
+  from{transform:translateY(10px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(87,155,252,.16)}
+  50%{box-shadow:0 0 0 10px rgba(87,155,252,0)}
+}
+
+.shell{display:flex;min-height:100vh;}
+
+/* Right rail (navigation) */
+.rail{
+  width:320px;
+  background:rgba(255,255,255,.92);
+  border-left:1px solid var(--line);
+  position:sticky;top:0;height:100vh;overflow:auto;
+  padding:14px 12px;
+  backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r18);}
+.logo{
+  width:42px;height:42px;border-radius:16px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  box-shadow:0 18px 40px rgba(87,155,252,.22);
+  position:relative;
+}
+.logo:after{content:"";position:absolute;inset:2px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(255,255,255,0));}
+.brandTitle{font-weight:950;font-size:14px;}
+.brandSub{font-size:12px;color:var(--muted);font-weight:800;}
+
+.section{margin-top:12px;padding:10px;border-radius:var(--r18);border:1px solid var(--line);background:#fff;box-shadow:0 10px 22px rgba(2,6,23,.06);animation:in .2s ease-out;}
+.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.sectionHead .t{font-weight:950;}
+.sectionHead .s{font-size:12px;color:var(--muted);font-weight:800;}
+
+.btn{
+  padding:10px 12px;border-radius:var(--r14);
+  border:1px solid var(--line);background:#fff;
+  font-weight:950;cursor:pointer;transition:.15s ease;
+  display:inline-flex;align-items:center;gap:8px;user-select:none;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(2,6,23,.08);}
+.btn:active{transform:translateY(0);}
+.btn.primary{background:var(--blue);color:#fff;border-color:transparent;}
+.btn.purple{background:var(--purple);color:#fff;border-color:transparent;}
+.btn.teal{background:var(--teal);color:#fff;border-color:transparent;}
+.btn.indigo{background:var(--indigo);color:#fff;border-color:transparent;}
+.btn.pink{background:var(--pink);color:#fff;border-color:transparent;}
+.btn.ghost{background:transparent;}
+.btn.full{width:100%;justify-content:space-between;}
+.btn.icon{width:44px;justify-content:center;padding:10px;}
+
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 7px;border-radius:999px;font-size:12px;font-weight:950;border:1px solid var(--line);background:#fff;}
+.badge.blue{background:rgba(87,155,252,.12);border-color:rgba(87,155,252,.28);color:#1d4ed8;}
+.badge.purple{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.28);color:#6b21a8;}
+.badge.teal{background:rgba(20,184,166,.12);border-color:rgba(20,184,166,.28);color:#0f766e;}
+.badge.amber{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.28);color:#854d0e;}
+.badge.red{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.28);color:#991b1b;}
+
+.small{font-size:12px;color:var(--muted);font-weight:800;line-height:1.45;}
+input,select,textarea{
+  padding:10px 12px;border:1px solid var(--line);border-radius:var(--r14);
+  background:#fff;font-weight:850;color:var(--text);outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:rgba(87,155,252,.55);box-shadow:0 0 0 3px rgba(87,155,252,.16);}
+textarea{min-height:94px;resize:vertical;}
+hr{border:none;border-top:1px solid var(--line);}
+
+.navList{display:flex;flex-direction:column;gap:8px;}
+.navItem{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;}
+.navItem.active{border-color:rgba(87,155,252,.55);box-shadow:0 0 0 3px rgba(87,155,252,.16);}
+
+.boards{display:flex;flex-direction:column;gap:8px;}
+.boardBtn{width:100%;justify-content:space-between;text-align:right;}
+.boardBtn.active{border-color:rgba(168,85,247,.55);box-shadow:0 0 0 3px rgba(168,85,247,.16);}
+
+/* Main area */
+.main{flex:1;padding:14px 14px 28px;}
+.top{
+  position:sticky;top:10px;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-radius:var(--r18);
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.92);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(10px);
+  animation:in .22s ease-out;
+}
+.top .left,.top .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.h1{font-size:18px;font-weight:950;margin:0;}
+.subline{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px;}
+.pageTitle{margin:14px 2px 10px;font-size:20px;font-weight:950;animation:in .22s ease-out;}
+
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;}
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--r18);
+  box-shadow:0 10px 24px rgba(2,6,23,.06);
+  overflow:hidden;animation:in .22s ease-out;
+}
+.cardHead{
+  padding:10px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+}
+.cardHead .t{font-weight:950;}
+.cardBody{padding:12px;}
+.kpiVal{font-size:28px;font-weight:950;letter-spacing:-.3px;}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;font-weight:950;font-size:12px;
+}
+.pill.blue{background:rgba(87,155,252,.10);border-color:rgba(87,155,252,.24);color:#1d4ed8;}
+.pill.purple{background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.24);color:#6b21a8;}
+.pill.teal{background:rgba(20,184,166,.10);border-color:rgba(20,184,166,.24);color:#0f766e;}
+.pill.amber{background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.24);color:#854d0e;}
+.pill.red{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.24);color:#991b1b;}
+
+.tableWrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;}
+table{width:100%;border-collapse:separate;border-spacing:0;}
+th,td{padding:10px;text-align:right;border-bottom:1px solid var(--line);font-size:13px;}
+th{background:#f3f6ff;font-weight:950;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fbfdff;}
+
+.miniGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.spark{height:210px;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;}
+
+/* Widgets canvas (dashboard builder) */
+.canvas{
+  position:relative;min-height:860px;
+  border:1px dashed rgba(229,231,235,.9);
+  border-radius:22px;background:linear-gradient(180deg,#fff,#fbfcff);
+  overflow:hidden;
+}
+.canvasBg{
+  position:absolute;inset:0;opacity:.22;pointer-events:none;
+  background-image:
+    linear-gradient(to right, rgba(226,232,240,.9) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226,232,240,.9) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.tile{
+  position:absolute;border:1px solid var(--line);border-radius:18px;background:#fff;
+  box-shadow:0 10px 24px rgba(2,6,23,.06);overflow:hidden;
+  transition:box-shadow .15s ease;
+}
+.tile:hover{box-shadow:var(--shadow2);}
+.tileHead{
+  padding:10px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+}
+.tileHead .t{font-weight:950;display:flex;align-items:center;gap:10px;}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 6px rgba(87,155,252,.12);}
+.dragArea{cursor:grab;}
+.dragging .dragArea{cursor:grabbing;}
+.handle{position:absolute;left:10px;bottom:10px;width:14px;height:14px;border-radius:4px;background:rgba(107,114,128,.22);cursor:nwse-resize;}
+.tileBody{padding:12px;}
+
+/* Modals */
+.modal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  padding:14px;background:rgba(2,6,23,.55);z-index:80;
+}
+.modal .box{
+  width:min(1100px,100%);border-radius:22px;border:1px solid var(--line);
+  background:#fff;box-shadow:var(--shadow2);overflow:hidden;animation:pop .18s ease-out;
+}
+.modal .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#f8fafc;border-bottom:1px solid var(--line);}
+.modal .bar .t{font-weight:950;}
+.modal .body{padding:14px;background:linear-gradient(180deg,#fff,#fbfcff);}
+.x{border:1px solid var(--line);background:#fff;border-radius:14px;padding:8px 10px;cursor:pointer;font-weight:950;}
+.cols{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;}
+@media(max-width:980px){.cols{grid-template-columns:1fr;}}
+
+/* Command Bar */
+.cmdk{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(2,6,23,.55);z-index:90;}
+.cmdk .box{width:min(760px,100%);background:#fff;border-radius:22px;border:1px solid var(--line);box-shadow:var(--shadow2);overflow:hidden;animation:pop .18s ease-out;}
+.cmdk .bar{padding:12px 14px;border-bottom:1px solid var(--line);background:#f8fafc;display:flex;gap:10px;align-items:center;}
+.cmdk .list{max-height:360px;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,#fff,#fbfcff);}
+.cmdk .row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;}
+.cmdk .row:hover{box-shadow:0 12px 26px rgba(2,6,23,.08);}
+.kbd{font-size:11px;color:var(--muted);font-weight:900;border:1px solid var(--line);padding:4px 8px;border-radius:999px;background:#fff;}
+
+/* Toasts */
+.toasts{position:fixed;left:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:95;}
+.toast{min-width:260px;max-width:380px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow2);padding:10px 12px;animation:pop .18s ease-out;}
+
+/* Notifications */
+.bell{position:relative}
+.dotNotif{position:absolute;left:2px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--red);animation:glow 1.8s ease-in-out infinite;}
+
+/* Floating ToDo */
+.floatTodo{
+  position:fixed;right:14px;bottom:14px;width:min(380px, calc(100vw - 28px));
+  background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow2);
+  z-index:85;overflow:hidden;transform:translateY(0);transition:transform .18s ease, opacity .18s ease;
+}
+.floatTodo.hidden{transform:translateY(20px);opacity:0;pointer-events:none;}
+.floatTodo .hdr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fbfcff;}
+.taskRow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:8px;}
+.taskRow:hover{box-shadow:0 12px 26px rgba(2,6,23,.08);}
+.taskRow .t{font-weight:950;}
+.taskRow .m{font-size:12px;color:var(--muted);font-weight:850;margin-top:4px;}
+
+/* Mobile */
+@media(max-width:980px){
+  .rail{position:fixed;right:0;top:0;height:100vh;z-index:70;transform:translateX(100%);transition:transform .2s ease;width:310px;box-shadow:var(--shadow2);}
+  body.nav-open .rail{transform:translateX(0);}
+  .main{padding:12px;}
+  .top{top:8px;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <div class="brandTitle">CRM AI • PRO</div>
+        <div class="brandSub" id="railSub">מוצר אמיתי • Level 7</div>
+      </div>
+    </div>
+
+    <div class="section" id="wsSection">
+      <div class="sectionHead">
+        <div>
+          <div class="t">Workspaces</div>
+          <div class="s">מרחבי עבודה / צוותים</div>
+        </div>
+        <button class="btn icon" onclick="openWorkspaceModal()" title="הוסף Workspace">＋</button>
+      </div>
+      <div class="small">בדמו: כמה Workspaces (כמו Monday). בחר כדי להחליף הקשר.</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="workspaceSelect" onchange="switchWorkspace(this.value)" style="flex:1;min-width:190px"></select>
+        <button class="btn indigo" onclick="openCmdK()">⌘K</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sectionHead">
+        <div>
+          <div class="t">Boards</div>
+          <div class="s">לוחות לפי סוג עסק</div>
+        </div>
+        <button class="btn icon" onclick="openBoardModal()" title="הוסף Board">＋</button>
+      </div>
+      <div class="boards" id="boardList"></div>
+      <div class="small" style="margin-top:8px">בדמו: “מספרה” זה Board פעיל.</div>
+    </div>
+
+    <div class="section">
+      <div class="sectionHead">
+        <div>
+          <div class="t">ניווט</div>
+          <div class="s">מודולים</div>
+        </div>
+        <span id="roleBadge" class="badge blue">Owner</span>
+      </div>
+      <div class="navList" id="nav"></div>
+    </div>
+
+    <div class="section">
+      <div class="sectionHead">
+        <div>
+          <div class="t">קיצורים</div>
+          <div class="s">AI + Builder</div>
+        </div>
+        <span class="badge purple">PRO</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn pink" style="justify-content:center" onclick="openAIBuild()">AI Builder</button>
+        <button class="btn teal" style="justify-content:center" onclick="openAI()">AI תובנות</button>
+        <button class="btn primary" style="justify-content:center" onclick="openWidgetBuilder()">Add Widget</button>
+        <button class="btn" style="justify-content:center" onclick="toggleFloatTodo()">To‑Do צף</button>
+      </div>
+      <div class="small" style="margin-top:10px">שכבת “Builder” מלאה + אוטומציות + נוטיפיקציות.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div class="right">
+        <button class="btn icon" onclick="toggleNav()">☰</button>
+        <div>
+          <div class="h1" id="tenantTitle">המספרה של איציק</div>
+          <div class="subline" id="contextLine">דשבורד • Builder • AI • תורים • מסמכים</div>
+        </div>
+      </div>
+      <div class="left">
+        <span class="small">מתאריך</span>
+        <input id="fromDate" type="date" value="2026-02-01"/>
+        <span class="small">עד</span>
+        <input id="toDate" type="date" value="2026-02-12"/>
+        <button class="btn primary" onclick="applyRange()">הצג</button>
+        <button class="btn" onclick="toggleCompare()">השוואה</button>
+        <button class="btn icon bell" onclick="openNotifications()" title="התראות">
+          🔔<span id="notifDot" class="dotNotif" style="display:none"></span>
+        </button>
+        <input id="globalSearch" placeholder="חיפוש חופשי (דמו)" oninput="render()" style="min-width:180px"/>
+        <button class="btn indigo" onclick="openCmdK()">⌘K</button>
+        <button class="btn" onclick="openSettings()">הגדרות</button>
+      </div>
+    </div>
+
+    <div class="pageTitle" id="pageTitle">דשבורד</div>
+    <div id="page"></div>
+  </main>
+</div>
+
+<!-- Floating To-Do -->
+<div id="floatTodo" class="floatTodo">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:10px;font-weight:950">
+      <span class="dot" style="background:var(--amber)"></span>To‑Do צף
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn ghost" onclick="quickCreateTask()">+ משימה</button>
+      <button class="x" onclick="toggleFloatTodo(true)">סגור</button>
+    </div>
+  </div>
+  <div style="padding:10px 12px;max-height:320px;overflow:auto" id="floatTodoBody"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="bar">
+      <div class="t" id="mTitle"></div>
+      <button class="x" onclick="closeModal()">סגור</button>
+    </div>
+    <div class="body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- Command Bar -->
+<div class="cmdk" id="cmdk">
+  <div class="box">
+    <div class="bar">
+      <input id="cmdkInput" placeholder="חפש פקודה / לקוח / מסמך / תור… (דמו)" style="width:100%"/>
+      <button class="x" onclick="closeCmdK()">סגור</button>
+    </div>
+    <div class="list" id="cmdkList"></div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const demo = {
+  tenants: [
+    {id:1, name:"המספרה של איציק", type:"מספרה"},
+    {id:2, name:"מוסך אלפא", type:"מוסך"},
+    {id:3, name:"סטודיו יוגה נועה", type:"סטודיו"},
+  ],
+  users: [
+    {id:1, name:"איציק", role:"Owner"},
+    {id:2, name:"מיכל", role:"Manager"},
+    {id:3, name:"דני", role:"Employee"},
+    {id:4, name:"לירון", role:"Employee"},
+  ],
+  customers: [{"id": 1000, "no": 101, "name": "שני מזרחי", "phone": "056-1810111", "email": "שנימזרחי10@mail.com", "address": "חיפה, רח׳ בן גוריון 75", "note": "לקוח קבוע", "source": "Walk-in"}, {"id": 1001, "no": 102, "name": "אור כהן", "phone": "051-8275367", "email": "אורכהן54@mail.com", "address": "חיפה, רח׳ הרצל 12", "note": "", "source": "המלצה"}, {"id": 1002, "no": 103, "name": "נועה חדד", "phone": "051-4745328", "email": "נועהחדד81@mail.com", "address": "תל אביב, רח׳ הים 75", "note": "VIP", "source": "Google"}, {"id": 1003, "no": 104, "name": "רועי כהן", "phone": "058-3234302", "email": "רועיכהן38@mail.com", "address": "נתניה, רח׳ הרצל 70", "note": "לקוח קבוע", "source": "Walk-in"}, {"id": 1004, "no": 105, "name": "ליאור דויד", "phone": "052-2728987", "email": "ליאורדויד75@mail.com", "address": "ראשון לציון, רח׳ בן גוריון 13", "note": "", "source": "Google"}, {"id": 1005, "no": 106, "name": "נועה חדד", "phone": "053-9328453", "email": "נועהחדד88@mail.com", "address": "נתניה, רח׳ בן גוריון 60", "note": "", "source": "המלצה"}, {"id": 1006, "no": 107, "name": "טל ישראלי", "phone": "053-4015985", "email": "טלישראלי90@mail.com", "address": "ראשון לציון, רח׳ העצמאות 74", "note": "מעדיף בוקר", "source": "Walk-in"}, {"id": 1007, "no": 108, "name": "שקד אברהם", "phone": "057-5830794", "email": "שקדאברהם78@mail.com", "address": "חיפה, רח׳ העצמאות 66", "note": "VIP", "source": "Meta"}, {"id": 1008, "no": 109, "name": "שני מזרחי", "phone": "057-8074924", "email": "שנימזרחי6@mail.com", "address": "חיפה, רח׳ הים 74", "note": "מעדיף בוקר", "source": "אורגני"}, {"id": 1009, "no": 110, "name": "טל חדד", "phone": "057-8653855", "email": "טלחדד9@mail.com", "address": "חיפה, רח׳ בן גוריון 61", "note": "לקוח קבוע", "source": "Google"}, {"id": 1010, "no": 111, "name": "ליאור שחר", "phone": "059-8476611", "email": "ליאורשחר37@mail.com", "address": "נתניה, רח׳ בן גוריון 3", "note": "VIP", "source": "אורגני"}, {"id": 1011, "no": 112, "name": "מאיה חדד", "phone": "051-9282794", "email": "מאיהחדד8@mail.com", "address": "ראשון לציון, רח׳ בן גוריון 17", "note": "רגיש לעור", "source": "המלצה"}, {"id": 1012, "no": 113, "name": "אלון רוזן", "phone": "051-3791163", "email": "אלוןרוזן58@mail.com", "address": "נתניה, רח׳ הים 36", "note": "רגיש לעור", "source": "המלצה"}, {"id": 1013, "no": 114, "name": "עדי קדם", "phone": "056-7019181", "email": "עדיקדם88@mail.com", "address": "נתניה, רח׳ הרצל 20", "note": "לקוח קבוע", "source": "Meta"}, {"id": 1014, "no": 115, "name": "איתי פרץ", "phone": "053-1202384", "email": "איתיפרץ63@mail.com", "address": "ירושלים, רח׳ בן גוריון 37", "note": "לקוח קבוע", "source": "Meta"}, {"id": 1015, "no": 116, "name": "דנה דויד", "phone": "055-6345416", "email": "דנהדויד17@mail.com", "address": "תל אביב, רח׳ הנביאים 116", "note": "", "source": "המלצה"}, {"id": 1016, "no": 117, "name": "אלון ביטון", "phone": "056-2737064", "email": "אלוןביטון62@mail.com", "address": "נתניה, רח׳ העצמאות 25", "note": "לקוח קבוע", "source": "Meta"}, {"id": 1017, "no": 118, "name": "עומר מזרחי", "phone": "051-6705153", "email": "עומרמזרחי77@mail.com", "address": "תל אביב, רח׳ העצמאות 1", "note": "", "source": "Meta"}],
+  docs: [{"id": 2000, "kind": "הצעת מחיר", "no": 550, "customerNo": 118, "customerName": "עומר מזרחי", "status": "אושרה", "total": 80, "paidAmount": 0, "createdDate": "2026-02-10", "approvedDate": "2026-02-10", "paidDate": "", "performer": "מיכל", "source": "Meta"}, {"id": 2001, "kind": "חשבונית", "no": 551, "customerNo": 113, "customerName": "אלון רוזן", "status": "שולמה", "total": 120, "paidAmount": 120, "createdDate": "2026-02-06", "approvedDate": "", "paidDate": "2026-02-10", "performer": "לירון", "source": "המלצה"}, {"id": 2002, "kind": "הצעת מחיר", "no": 552, "customerNo": 104, "customerName": "רועי כהן", "status": "אושרה", "total": 150, "paidAmount": 0, "createdDate": "2026-02-08", "approvedDate": "2026-02-11", "paidDate": "", "performer": "דני", "source": "Walk-in"}, {"id": 2003, "kind": "חשבונית", "no": 553, "customerNo": 103, "customerName": "נועה חדד", "status": "פתוחה", "total": 120, "paidAmount": 0, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "", "performer": "דני", "source": "Google"}, {"id": 2004, "kind": "חשבונית", "no": 554, "customerNo": 116, "customerName": "דנה דויד", "status": "באיחור", "total": 100, "paidAmount": 0, "createdDate": "2026-02-01", "approvedDate": "", "paidDate": "", "performer": "דני", "source": "המלצה"}, {"id": 2005, "kind": "הצעת מחיר", "no": 555, "customerNo": 105, "customerName": "ליאור דויד", "status": "בוטלה", "total": 250, "paidAmount": 0, "createdDate": "2026-02-05", "approvedDate": "", "paidDate": "", "performer": "איציק", "source": "Google"}, {"id": 2006, "kind": "חשבונית", "no": 556, "customerNo": 109, "customerName": "שני מזרחי", "status": "שולמה", "total": 200, "paidAmount": 200, "createdDate": "2026-02-06", "approvedDate": "", "paidDate": "2026-02-07", "performer": "דני", "source": "אורגני"}, {"id": 2007, "kind": "חשבונית", "no": 557, "customerNo": 108, "customerName": "שקד אברהם", "status": "שולמה", "total": 100, "paidAmount": 100, "createdDate": "2026-02-07", "approvedDate": "", "paidDate": "2026-02-12", "performer": "מיכל", "source": "Meta"}, {"id": 2008, "kind": "חשבונית", "no": 558, "customerNo": 117, "customerName": "אלון ביטון", "status": "שולמה", "total": 80, "paidAmount": 80, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "2026-02-12", "performer": "דני", "source": "Meta"}, {"id": 2009, "kind": "חשבונית", "no": 559, "customerNo": 116, "customerName": "דנה דויד", "status": "שולמה", "total": 120, "paidAmount": 120, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "2026-02-16", "performer": "לירון", "source": "המלצה"}, {"id": 2010, "kind": "חשבונית", "no": 560, "customerNo": 112, "customerName": "מאיה חדד", "status": "פתוחה", "total": 80, "paidAmount": 0, "createdDate": "2026-02-04", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "המלצה"}, {"id": 2011, "kind": "חשבונית", "no": 561, "customerNo": 116, "customerName": "דנה דויד", "status": "שולמה", "total": 200, "paidAmount": 200, "createdDate": "2026-02-04", "approvedDate": "", "paidDate": "2026-02-07", "performer": "איציק", "source": "המלצה"}, {"id": 2012, "kind": "חשבונית", "no": 562, "customerNo": 116, "customerName": "דנה דויד", "status": "פתוחה", "total": 80, "paidAmount": 0, "createdDate": "2026-02-11", "approvedDate": "", "paidDate": "", "performer": "לירון", "source": "המלצה"}, {"id": 2013, "kind": "חשבונית", "no": 563, "customerNo": 107, "customerName": "טל ישראלי", "status": "שולמה", "total": 120, "paidAmount": 120, "createdDate": "2026-02-07", "approvedDate": "", "paidDate": "2026-02-12", "performer": "איציק", "source": "Walk-in"}, {"id": 2014, "kind": "חשבונית", "no": 564, "customerNo": 113, "customerName": "אלון רוזן", "status": "שולמה חלקית", "total": 250, "paidAmount": 125.0, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "2026-02-12", "performer": "מיכל", "source": "המלצה"}, {"id": 2015, "kind": "הצעת מחיר", "no": 565, "customerNo": 105, "customerName": "ליאור דויד", "status": "ממתין לאישור", "total": 150, "paidAmount": 0, "createdDate": "2026-02-10", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "Google"}, {"id": 2016, "kind": "חשבונית", "no": 566, "customerNo": 116, "customerName": "דנה דויד", "status": "שולמה", "total": 100, "paidAmount": 100, "createdDate": "2026-02-09", "approvedDate": "", "paidDate": "2026-02-13", "performer": "איציק", "source": "המלצה"}, {"id": 2017, "kind": "הצעת מחיר", "no": 567, "customerNo": 101, "customerName": "שני מזרחי", "status": "בוטלה", "total": 100, "paidAmount": 0, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "", "performer": "לירון", "source": "Walk-in"}, {"id": 2018, "kind": "חשבונית", "no": 568, "customerNo": 107, "customerName": "טל ישראלי", "status": "פתוחה", "total": 100, "paidAmount": 0, "createdDate": "2026-02-05", "approvedDate": "", "paidDate": "", "performer": "דני", "source": "Walk-in"}, {"id": 2019, "kind": "חשבונית", "no": 569, "customerNo": 117, "customerName": "אלון ביטון", "status": "באיחור", "total": 120, "paidAmount": 0, "createdDate": "2026-02-06", "approvedDate": "", "paidDate": "", "performer": "לירון", "source": "Meta"}, {"id": 2020, "kind": "הצעת מחיר", "no": 570, "customerNo": 105, "customerName": "ליאור דויד", "status": "בוטלה", "total": 150, "paidAmount": 0, "createdDate": "2026-02-06", "approvedDate": "", "paidDate": "", "performer": "לירון", "source": "Google"}, {"id": 2021, "kind": "חשבונית", "no": 571, "customerNo": 117, "customerName": "אלון ביטון", "status": "באיחור", "total": 200, "paidAmount": 0, "createdDate": "2026-02-03", "approvedDate": "", "paidDate": "", "performer": "איציק", "source": "Meta"}, {"id": 2022, "kind": "חשבונית", "no": 572, "customerNo": 115, "customerName": "איתי פרץ", "status": "באיחור", "total": 100, "paidAmount": 0, "createdDate": "2026-02-01", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "Meta"}, {"id": 2023, "kind": "חשבונית", "no": 573, "customerNo": 105, "customerName": "ליאור דויד", "status": "באיחור", "total": 80, "paidAmount": 0, "createdDate": "2026-02-12", "approvedDate": "", "paidDate": "", "performer": "איציק", "source": "Google"}, {"id": 2024, "kind": "חשבונית", "no": 574, "customerNo": 111, "customerName": "ליאור שחר", "status": "פתוחה", "total": 80, "paidAmount": 0, "createdDate": "2026-02-09", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "אורגני"}, {"id": 2025, "kind": "חשבונית", "no": 575, "customerNo": 107, "customerName": "טל ישראלי", "status": "פתוחה", "total": 200, "paidAmount": 0, "createdDate": "2026-02-02", "approvedDate": "", "paidDate": "", "performer": "לירון", "source": "Walk-in"}, {"id": 2026, "kind": "הצעת מחיר", "no": 576, "customerNo": 118, "customerName": "עומר מזרחי", "status": "ממתין לאישור", "total": 120, "paidAmount": 0, "createdDate": "2026-02-08", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "Meta"}, {"id": 2027, "kind": "חשבונית", "no": 577, "customerNo": 109, "customerName": "שני מזרחי", "status": "באיחור", "total": 150, "paidAmount": 0, "createdDate": "2026-02-09", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "אורגני"}, {"id": 2028, "kind": "חשבונית", "no": 578, "customerNo": 117, "customerName": "אלון ביטון", "status": "באיחור", "total": 150, "paidAmount": 0, "createdDate": "2026-02-04", "approvedDate": "", "paidDate": "", "performer": "מיכל", "source": "Meta"}, {"id": 2029, "kind": "הצעת מחיר", "no": 579, "customerNo": 114, "customerName": "עדי קדם", "status": "אושרה", "total": 80, "paidAmount": 0, "createdDate": "2026-02-08", "approvedDate": "2026-02-10", "paidDate": "", "performer": "מיכל", "source": "Meta"}, {"id": 2030, "kind": "הצעת מחיר", "no": 580, "customerNo": 114, "customerName": "עדי קדם", "status": "ממתין לאישור", "total": 120, "paidAmount": 0, "createdDate": "2026-02-11", "approvedDate": "", "paidDate": "", "performer": "איציק", "source": "Meta"}, {"id": 2031, "kind": "חשבונית", "no": 581, "customerNo": 105, "customerName": "ליאור דויד", "status": "שולמה", "total": 150, "paidAmount": 150, "createdDate": "2026-02-05", "approvedDate": "", "paidDate": "2026-02-06", "performer": "מיכל", "source": "Google"}, {"id": 2032, "kind": "חשבונית", "no": 582, "customerNo": 104, "customerName": "רועי כהן", "status": "שולמה חלקית", "total": 100, "paidAmount": 50.0, "createdDate": "2026-02-03", "approvedDate": "", "paidDate": "2026-02-08", "performer": "לירון", "source": "Walk-in"}, {"id": 2033, "kind": "חשבונית", "no": 583, "customerNo": 117, "customerName": "אלון ביטון", "status": "שולמה", "total": 120, "paidAmount": 120, "createdDate": "2026-02-07", "approvedDate": "", "paidDate": "2026-02-08", "performer": "דני", "source": "Meta"}],
+  expenses: [{"id": 3000, "date": "2026-02-02", "category": "ציוד", "amount": 45, "source": "ידני", "assignedToStaff": true, "staff": "לירון"}, {"id": 3001, "date": "2026-02-08", "category": "שכירות", "amount": 600, "source": "ידני", "assignedToStaff": true, "staff": "דני"}, {"id": 3002, "date": "2026-02-09", "category": "פרסום Google", "amount": 80, "source": "Google", "assignedToStaff": false, "staff": ""}, {"id": 3003, "date": "2026-02-04", "category": "פרסום Google", "amount": 80, "source": "Google", "assignedToStaff": true, "staff": "איציק"}, {"id": 3004, "date": "2026-02-03", "category": "חומרי עבודה", "amount": 120, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3005, "date": "2026-02-11", "category": "חומרי עבודה", "amount": 600, "source": "ידני", "assignedToStaff": true, "staff": "לירון"}, {"id": 3006, "date": "2026-02-12", "category": "ציוד", "amount": 80, "source": "ידני", "assignedToStaff": true, "staff": "מיכל"}, {"id": 3007, "date": "2026-02-07", "category": "פרסום Google", "amount": 250, "source": "Google", "assignedToStaff": false, "staff": ""}, {"id": 3008, "date": "2026-02-11", "category": "פרסום Google", "amount": 250, "source": "Google", "assignedToStaff": true, "staff": "מיכל"}, {"id": 3009, "date": "2026-02-02", "category": "חומרי עבודה", "amount": 80, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3010, "date": "2026-02-06", "category": "קפה/כיבוד", "amount": 250, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3011, "date": "2026-02-01", "category": "דלק", "amount": 80, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3012, "date": "2026-02-05", "category": "שכירות", "amount": 120, "source": "ידני", "assignedToStaff": true, "staff": "דני"}, {"id": 3013, "date": "2026-02-11", "category": "חומרי עבודה", "amount": 1200, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3014, "date": "2026-02-05", "category": "אחר", "amount": 1200, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3015, "date": "2026-02-05", "category": "ציוד", "amount": 45, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3016, "date": "2026-02-01", "category": "שכירות", "amount": 45, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3017, "date": "2026-02-09", "category": "דלק", "amount": 1200, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3018, "date": "2026-02-08", "category": "פרסום Google", "amount": 600, "source": "Google", "assignedToStaff": false, "staff": ""}, {"id": 3019, "date": "2026-02-09", "category": "קפה/כיבוד", "amount": 1200, "source": "ידני", "assignedToStaff": true, "staff": "מיכל"}, {"id": 3020, "date": "2026-02-04", "category": "ציוד", "amount": 180, "source": "ידני", "assignedToStaff": false, "staff": ""}, {"id": 3021, "date": "2026-02-12", "category": "פרסום Meta", "amount": 600, "source": "Meta", "assignedToStaff": false, "staff": ""}],
+  appts: [{"id": 4000, "date": "2026-02-03", "time": "09:00", "customerNo": 102, "customerName": "אור כהן", "service": "צבע", "staff": "דני", "status": "ממתין"}, {"id": 4001, "date": "2026-02-01", "time": "10:45", "customerNo": 106, "customerName": "נועה חדד", "service": "פן", "staff": "דני", "status": "בוטל"}, {"id": 4002, "date": "2026-02-12", "time": "13:00", "customerNo": 108, "customerName": "שקד אברהם", "service": "גוונים", "staff": "מיכל", "status": "מאושר"}, {"id": 4003, "date": "2026-02-08", "time": "09:30", "customerNo": 109, "customerName": "שני מזרחי", "service": "זקן", "staff": "דני", "status": "בוטל"}, {"id": 4004, "date": "2026-02-04", "time": "09:30", "customerNo": 111, "customerName": "ליאור שחר", "service": "תספורת+זקן", "staff": "דני", "status": "מאושר"}, {"id": 4005, "date": "2026-02-06", "time": "15:00", "customerNo": 101, "customerName": "שני מזרחי", "service": "גוונים", "staff": "דני", "status": "בוטל"}, {"id": 4006, "date": "2026-02-04", "time": "17:00", "customerNo": 107, "customerName": "טל ישראלי", "service": "תספורת", "staff": "דני", "status": "מאושר"}, {"id": 4007, "date": "2026-02-07", "time": "18:00", "customerNo": 105, "customerName": "ליאור דויד", "service": "גוונים", "staff": "איציק", "status": "ממתין"}, {"id": 4008, "date": "2026-02-11", "time": "12:00", "customerNo": 110, "customerName": "טל חדד", "service": "פן", "staff": "מיכל", "status": "בוטל"}, {"id": 4009, "date": "2026-02-06", "time": "16:15", "customerNo": 113, "customerName": "אלון רוזן", "service": "זקן", "staff": "מיכל", "status": "מאושר"}, {"id": 4010, "date": "2026-02-11", "time": "15:15", "customerNo": 117, "customerName": "אלון ביטון", "service": "פן", "staff": "איציק", "status": "בוטל"}, {"id": 4011, "date": "2026-02-02", "time": "09:00", "customerNo": 108, "customerName": "שקד אברהם", "service": "תספורת+זקן", "staff": "דני", "status": "מאושר"}, {"id": 4012, "date": "2026-02-08", "time": "17:00", "customerNo": 113, "customerName": "אלון רוזן", "service": "צבע", "staff": "איציק", "status": "בוטל"}, {"id": 4013, "date": "2026-02-11", "time": "12:45", "customerNo": 118, "customerName": "עומר מזרחי", "service": "זקן", "staff": "איציק", "status": "ממתין"}, {"id": 4014, "date": "2026-02-12", "time": "17:00", "customerNo": 103, "customerName": "נועה חדד", "service": "צבע", "staff": "איציק", "status": "בוטל"}, {"id": 4015, "date": "2026-02-05", "time": "10:30", "customerNo": 116, "customerName": "דנה דויד", "service": "תספורת+זקן", "staff": "מיכל", "status": "מאושר"}, {"id": 4016, "date": "2026-02-08", "time": "15:00", "customerNo": 115, "customerName": "איתי פרץ", "service": "גוונים", "staff": "דני", "status": "מאושר"}, {"id": 4017, "date": "2026-02-02", "time": "18:15", "customerNo": 107, "customerName": "טל ישראלי", "service": "זקן", "staff": "דני", "status": "בוטל"}],
+};
+
+/* Workspaces + Boards (Monday-like) */
+const workspaces = [
+  {id:"w1", name:"איציק • המספרה", tenantId:1, boards:[
+    {id:"b1", name:"CRM מספרה", preset:"salon", icon:"✂️"},
+    {id:"b2", name:"שיווק / קמפיינים", preset:"marketing", icon:"📣"},
+    {id:"b3", name:"משימות צוות", preset:"tasks", icon:"✅"},
+  ]},
+  {id:"w2", name:"אלפא • מוסך", tenantId:2, boards:[
+    {id:"b4", name:"CRM מוסך", preset:"garage", icon:"🔧"},
+    {id:"b5", name:"מלאי וחלפים", preset:"inventory", icon:"📦"},
+  ]},
+  {id:"w3", name:"נועה • סטודיו", tenantId:3, boards:[
+    {id:"b6", name:"CRM סטודיו", preset:"studio", icon:"🧘"},
+  ]},
+];
+
+/* App State */
+let ui = {
+  workspaceId:"w1",
+  boardId:"b1",
+  page:"dashboard",
+  role:"Owner",
+  range: {from:"2026-02-01", to:"2026-02-12"},
+  compare:false,
+  floatTodo:true,
+  screenConfig: {
+    show: {
+      dashboard:true, customers:true, docs:true, calendar:true, expenses:true, tasks:true, inventory:true, marketing:true, automations:true, reports:true, communications:true
+    }
+  },
+  dash: {
+    cols: 12, rowH: 64, gap: 10,
+    tiles: [
+      {id:"kpi_income", type:"kpi", title:"הכנסה בפועל", color:"blue", metric:"actualIncome", x:0,y:0,w:3,h:2},
+      {id:"kpi_expected", type:"kpi", title:"הכנסה צפויה", color:"purple", metric:"expectedIncome", x:3,y:0,w:3,h:2},
+      {id:"kpi_exp", type:"kpi", title:"הוצאות", color:"amber", metric:"totalExpenses", x:6,y:0,w:3,h:2},
+      {id:"kpi_profit", type:"kpi", title:"רווח", color:"green", metric:"netProfit", x:9,y:0,w:3,h:2},
+      {id:"chart_income", type:"chart", title:"מגמת הכנסות", color:"blue", chart:"line_income", x:0,y:2,w:7,h:4},
+      {id:"table_staff", type:"table", title:"ביצועים לפי עובד", color:"teal", table:"staff_perf", x:7,y:2,w:5,h:4},
+      {id:"todo", type:"todo", title:"משימות פתוחות", color:"amber", x:0,y:6,w:5,h:4},
+      {id:"docs_attention", type:"table", title:"מסמכים פתוחים / באיחור", color:"red", table:"docs_attention", x:5,y:6,w:7,h:4},
+    ]
+  }
+};
+
+/* Tasks (To‑Do) */
+const tasks = [
+  {id:"t1", title:"בדיקת תמחור שירות 'שיער+זקן'", priority:"בינונית", status:"פתוחה", stage:"פתוח", assignee:"איציק", due:"2026-02-14", source:"ידני"},
+  {id:"t2", title:"תזכורת ללקוח: חשבונית #1048 באיחור", priority:"גבוהה", status:"פתוחה", stage:"בתהליך", assignee:"מיכל", due:"2026-02-12", source:"AI", link:{type:"doc", no:1048} },
+  {id:"t3", title:"פולואפ להצעת מחיר שממתינה לאישור", priority:"בינונית", status:"פתוחה", stage:"פתוח", assignee:"דני", due:"2026-02-13", source:"AI"},
+];
+
+/* Notifications */
+let notifications = [
+  {id:"n1", ts:"2026-02-12 09:12", title:"הצעת מחיר אושרה", body:"לקוח אישר הצעת מחיר #2051", tone:"teal"},
+  {id:"n2", ts:"2026-02-12 10:01", title:"חשבונית באיחור", body:"חשבונית #1048 באיחור — נוצרה משימה למיכל", tone:"red"},
+  {id:"n3", ts:"2026-02-12 11:30", title:"AI Insight", body:"ROI Meta נמוך השבוע — מומלץ לעצור קמפיין", tone:"amber"},
+];
+
+/* Automations (IF/THEN demo) */
+let automations = [
+  {id:"a1", name:"חשבונית באיחור → צור משימת תזכורת", enabled:true, if:"Invoice overdue", then:"Create task + notify", severity:"גבוהה"},
+  {id:"a2", name:"רווח שלילי → משימה לבדוק הוצאות/תמחור", enabled:true, if:"Net profit < 0", then:"Create task to owner", severity:"גבוהה"},
+  {id:"a3", name:"הצעת מחיר ממתינה → פולואפ", enabled:true, if:"Quote pending > 2 days", then:"Create task to employee", severity:"בינונית"},
+];
+
+/* Inventory demo (generic) */
+let inventory = [
+  {sku:"BLADE-01", name:"סכיני מכונה", qty:14, unit:"יח׳", cost:18.5},
+  {sku:"GEL-250", name:"ג׳ל לשיער 250ml", qty:22, unit:"יח׳", cost:9.9},
+  {sku:"SHAMPOO-1L", name:"שמפו 1 ליטר", qty:8, unit:"בקבוק", cost:21.0},
+];
+
+/* Marketing spend demo */
+let marketing = [
+  {date:"2026-02-02", channel:"Google", spend:120.0, leads:9, revenue:360.0},
+  {date:"2026-02-05", channel:"Meta", spend:180.0, leads:7, revenue:240.0},
+  {date:"2026-02-08", channel:"Google", spend:90.0, leads:5, revenue:190.0},
+];
+
+/* Communications (calls/emails) demo */
+let comms = [
+  {ts:"2026-02-11 16:05", type:"שיחה", from:"יובל", summary:"שאל על שינוי תור, AI סיכם", sentiment:"חיובי"},
+  {ts:"2026-02-12 09:40", type:"מייל", from:"נועה", summary:"בקשה להצעת מחיר לחבילת טיפול", sentiment:"ניטרלי"},
+];
+
+/* ===================== HELPERS ===================== */
+function toggleNav(){ document.body.classList.toggle("nav-open"); }
+function parseDate(s){ return new Date(s+"T00:00:00"); }
+function inRange(dateStr){ const d=parseDate(dateStr), f=parseDate(ui.range.from), t=parseDate(ui.range.to); return d>=f && d<=t; }
+function money(n){ return "₪" + (Math.round(n*100)/100).toLocaleString("he-IL"); }
+function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+function uuid(prefix="id"){ return prefix+"_"+Math.random().toString(16).slice(2); }
+function toast(msg, tone="blue"){
+  const el=document.createElement("div"); el.className="toast";
+  const tClass = tone==="red"?"red":tone==="amber"?"amber":tone==="teal"?"teal":tone==="purple"?"purple":"blue";
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+    <div><div style="font-weight:950">🔔 ${msg}</div><div class="small">PRO Demo • ${new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</div></div>
+    <span class="badge ${tClass}">${tone}</span>
+  </div>`;
+  const box=document.getElementById("toasts");
+  box.appendChild(el);
+  setTimeout(()=>{ el.style.opacity="0"; el.style.transform="translateY(6px)"; el.style.transition=".22s ease"; }, 2600);
+  setTimeout(()=>{ el.remove(); }, 3100);
+}
+function openModal(title, bodyHtml){ document.getElementById("mTitle").innerText=title; document.getElementById("mBody").innerHTML=bodyHtml; document.getElementById("modal").style.display="flex"; }
+function closeModal(){ document.getElementById("modal").style.display="none"; }
+function openCmdK(){ document.getElementById("cmdk").style.display="flex"; const i=document.getElementById("cmdkInput"); i.value=""; renderCmdK(""); setTimeout(()=>i.focus(), 30); }
+function closeCmdK(){ document.getElementById("cmdk").style.display="none"; }
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ closeCmdK(); closeModal(); } if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); openCmdK(); } });
+document.addEventListener("input",(e)=>{ if(e.target && e.target.id==="cmdkInput") renderCmdK(e.target.value||""); });
+
+function setNotifDot(){ document.getElementById("notifDot").style.display = notifications.length ? "block" : "none"; }
+
+/* ===================== SUMMARY / KPIs ===================== */
+function calcSummary(range){
+  const inR = (ds)=>{ const d=parseDate(ds), f=parseDate(range.from), t=parseDate(range.to); return d>=f && d<=t; };
+  const invoicesCreated = demo.docs.filter(d=>d.kind==="חשבונית" && inR(d.createdDate));
+  const approvedQuotes = demo.docs.filter(d=>d.kind==="הצעת מחיר" && d.status==="אושרה" && d.approvedDate && inR(d.approvedDate));
+  const paidInRange = demo.docs.filter(d=>d.kind==="חשבונית" && d.paidDate && inR(d.paidDate) && ["שולמה","שולמה חלקית"].includes(d.status));
+  const actualIncome = paidInRange.reduce((s,d)=>s+d.paidAmount,0);
+  const expectedIncome = approvedQuotes.reduce((s,d)=>s+d.total,0) + invoicesCreated.filter(d=>["פתוחה","באיחור","שולמה חלקית"].includes(d.status)).reduce((s,d)=>s+(d.total-d.paidAmount),0);
+  const totalExpenses = demo.expenses.filter(e=>inR(e.date)).reduce((s,e)=>s+e.amount,0);
+  const netProfit = actualIncome - totalExpenses;
+  const overdueInvoices = invoicesCreated.filter(d=>d.status==="באיחור").length;
+  const pendingQuotes = demo.docs.filter(d=>d.kind==="הצעת מחיר" && d.status==="ממתין לאישור" && inR(d.createdDate)).length;
+  return {actualIncome, expectedIncome, totalExpenses, netProfit, overdueInvoices, pendingQuotes};
+}
+function prevRange(){ const f=parseDate(ui.range.from), t=parseDate(ui.range.to); const days=Math.round((t-f)/86400000)+1; const prevTo=new Date(f.getTime()-86400000); const prevFrom=new Date(prevTo.getTime()-(days-1)*86400000); const iso=(d)=>d.toISOString().slice(0,10); return {from:iso(prevFrom), to:iso(prevTo)}; }
+function deltaPill(curr, prev){ if(prev===0 && curr===0) return `<span class="pill">0%</span>`; if(prev===0) return `<span class="pill teal">+∞</span>`; const pct=((curr-prev)/prev)*100; const cls=pct>=0?"teal":"red"; const sign=pct>=0?"+":""; return `<span class="pill ${cls}">${sign}${pct.toFixed(1)}%</span>`; }
+
+/* ===================== AI INSIGHTS & AUTOMATIONS ===================== */
+function aiInsights(summary){
+  const googleSpend = demo.expenses.filter(e=>inRange(e.date) && e.source==="Google").reduce((a,b)=>a+b.amount,0);
+  const metaSpend = demo.expenses.filter(e=>inRange(e.date) && e.source==="Meta").reduce((a,b)=>a+b.amount,0);
+  const googleIncome = demo.docs.filter(d=>d.kind==="חשבונית" && d.paidDate && inRange(d.paidDate) && ["שולמה","שולמה חלקית"].includes(d.status) && d.source==="Google").reduce((a,b)=>a+b.paidAmount,0);
+  const metaIncome = demo.docs.filter(d=>d.kind==="חשבונית" && d.paidDate && inRange(d.paidDate) && ["שולמה","שולמה חלקית"].includes(d.status) && d.source==="Meta").reduce((a,b)=>a+b.paidAmount,0);
+  const roi=(inc,sp)=> sp<=0?null:(inc/sp);
+  const gap = summary.expectedIncome - summary.actualIncome;
+  const out=[];
+  out.push({t:"פער בין צפוי לבפועל", d:`פער של ${money(gap)}`, sev: gap>0? "amber":"teal"});
+  if(summary.overdueInvoices>0) out.push({t:"חשבוניות באיחור", d:`${summary.overdueInvoices} באיחור — מומלץ תזכורת`, sev:"red"});
+  if(googleSpend>0) out.push({t:"ROI Google", d:`הוצאה ${money(googleSpend)} • הכנסה ${money(googleIncome)} • ROI ${roi(googleIncome,googleSpend)?roi(googleIncome,googleSpend).toFixed(1)+"×":"—"}`, sev: roi(googleIncome,googleSpend) && roi(googleIncome,googleSpend)<1 ? "red":"teal"});
+  if(metaSpend>0) out.push({t:"ROI Meta", d:`הוצאה ${money(metaSpend)} • הכנסה ${money(metaIncome)} • ROI ${roi(metaIncome,metaSpend)?roi(metaIncome,metaSpend).toFixed(1)+"×":"—"}`, sev: roi(metaIncome,metaSpend) && roi(metaIncome,metaSpend)<1 ? "red":"teal"});
+  if(summary.netProfit<0) out.push({t:"אזהרת רווח", d:"הרווח בטווח שלילי — בדוק הוצאות/תמחור", sev:"red"});
+  return out.slice(0,6);
+}
+
+function ensureTask(title, opts){
+  const exists = tasks.some(t=>t.title===title && t.source===opts.source);
+  if(exists) return;
+  tasks.unshift({id:uuid("t"), title, priority:opts.priority||"בינונית", status:"פתוחה", stage:opts.stage||"פתוח", assignee:opts.assignee||"איציק", due:opts.due||ui.range.to, source:opts.source||"AI", link:opts.link||null});
+  toast("נוצרה משימה: "+title, opts.priority==="גבוהה"?"red":"amber");
+}
+
+function runAuto(){
+  const s=calcSummary(ui.range);
+  const rule=(id)=>automations.find(a=>a.id===id)?.enabled;
+  if(rule("a1")){
+    const overdue = demo.docs.filter(d=>d.kind==="חשבונית" && d.status==="באיחור" && inRange(d.createdDate)).slice(0,6);
+    overdue.forEach(d=> ensureTask(`תזכורת ללקוח: חשבונית #${d.no} באיחור`, {source:"AI", priority:"גבוהה", assignee:"מיכל", stage:"בתהליך", due:ui.range.to, link:{type:"doc", no:d.no}}));
+  }
+  if(rule("a2") && s.netProfit<0) ensureTask("בדוק הוצאות ותמחור — רווח שלילי בטווח", {source:"AI", priority:"גבוהה", assignee:"איציק", stage:"פתוח", due:ui.range.to});
+  if(rule("a3")){
+    const pending=demo.docs.filter(d=>d.kind==="הצעת מחיר" && d.status==="ממתין לאישור" && inRange(d.createdDate)).slice(0,4);
+    pending.forEach(d=> ensureTask(`פולואפ להצעת מחיר #${d.no} (ממתין לאישור)`, {source:"AI", priority:"בינונית", assignee:"דני", stage:"פתוח", due:ui.range.to, link:{type:"doc", no:d.no}}));
+  }
+  refreshBadges();
+  renderFloatTodo();
+}
+
+/* ===================== UI: NAV / WORKSPACE / BOARD ===================== */
+function initWorkspaceSelect(){
+  const sel=document.getElementById("workspaceSelect");
+  sel.innerHTML = workspaces.map(w=>`<option value="${w.id}">${w.name}</option>`).join("");
+  sel.value = ui.workspaceId;
+}
+function currentWorkspace(){ return workspaces.find(w=>w.id===ui.workspaceId) || workspaces[0]; }
+function currentBoard(){ const w=currentWorkspace(); return w.boards.find(b=>b.id===ui.boardId) || w.boards[0]; }
+function switchWorkspace(id){
+  ui.workspaceId=id;
+  const w=currentWorkspace();
+  ui.boardId=w.boards[0].id;
+  const tenant=demo.tenants.find(t=>t.id===w.tenantId)||demo.tenants[0];
+  document.getElementById("tenantTitle").innerText = tenant.name;
+  toast("הוחלף Workspace: "+w.name, "teal");
+  renderBoards();
+  go("dashboard");
+}
+function renderBoards(){
+  const w=currentWorkspace();
+  const box=document.getElementById("boardList");
+  box.innerHTML = w.boards.map(b=>{
+    const active = b.id===ui.boardId ? "active" : "";
+    return `<button class="btn boardBtn ${active}" onclick="switchBoard('${b.id}')">
+      <span>${b.icon} ${b.name}</span>
+      <span class="badge purple">${b.preset}</span>
+    </button>`;
+  }).join("");
+}
+function switchBoard(id){
+  ui.boardId=id;
+  const b=currentBoard();
+  document.getElementById("contextLine").innerText = `Board: ${b.name} • ${b.preset} • מודולים`;
+  toast("הוחלף Board: "+b.name, "purple");
+  go("dashboard");
+}
+
+/* Role switcher (demo) */
+function setRole(role){
+  ui.role=role;
+  document.getElementById("roleBadge").textContent=role;
+  toast("תפקיד: "+role, "blue");
+  render();
+}
+
+/* Navigation items */
+const NAV_ITEMS = [
+  {id:"dashboard", label:"דשבורד", tag:"KPI", key:"dashboard"},
+  {id:"customers", label:"לקוחות", tag:"CRM", key:"customers"},
+  {id:"docs", label:"מסמכים", tag:"Quotes/Invoices", key:"docs"},
+  {id:"calendar", label:"יומן תורים", tag:"Scheduler", key:"calendar"},
+  {id:"tasks", label:"משימות", tag:"Board", key:"tasks"},
+  {id:"expenses", label:"הוצאות", tag:"Finance", key:"expenses"},
+  {id:"inventory", label:"מלאי", tag:"Stock", key:"inventory"},
+  {id:"marketing", label:"שיווק (Ads)", tag:"ROI", key:"marketing"},
+  {id:"communications", label:"שיחות/מיילים", tag:"AI Analysis", key:"communications"},
+  {id:"automations", label:"אוטומציות", tag:"IF/THEN", key:"automations"},
+  {id:"reports", label:"דוחות", tag:"Builder", key:"reports"},
+];
+
+/* Screen config rules by role (demo) */
+function canAccess(id){
+  if(ui.role==="Employee"){
+    // employee limited: customers/docs/calendar/tasks (self), no settings/automations/reports advanced
+    return ["dashboard","customers","docs","calendar","tasks"].includes(id);
+  }
+  return true;
+}
+
+/* ===================== COMMAND BAR ===================== */
+function renderCmdK(q){
+  q=(q||"").trim().toLowerCase();
+  const items=[];
+  // Commands
+  items.push({label:"פתח דשבורד", meta:"ניווט", fn:()=>go("dashboard")});
+  items.push({label:"פתח לקוחות", meta:"ניווט", fn:()=>go("customers")});
+  items.push({label:"פתח מסמכים", meta:"ניווט", fn:()=>go("docs")});
+  items.push({label:"+ משימה חדשה", meta:"פעולה", fn:()=>quickCreateTask()});
+  items.push({label:"+ Widget לדשבורד", meta:"Builder", fn:()=>openWidgetBuilder()});
+  items.push({label:"AI תובנות", meta:"AI", fn:()=>openAI()});
+  // Entities
+  demo.customers.slice(0,60).forEach(c=> items.push({label:`לקוח: ${c.name}`, meta:`#${c.no} • ${c.phone}`, fn:()=>openCustomer(c.no)}));
+  demo.docs.slice(0,60).forEach(d=> items.push({label:`מסמך: #${d.no} (${d.kind} )`, meta:`${d.customerName} • ${d.status}`, fn:()=>openDoc(d.no)}));
+  demo.appts.slice(0,40).forEach(a=> items.push({label:`תור: ${a.customerName} (${a.date} ${a.time} )`, meta:`${a.service} • ${a.staff}`, fn:()=>openAppt(a)}));
+  // Filter
+  const filtered = items.filter(it=>!q || (it.label+" "+it.meta).toLowerCase().includes(q)).slice(0,14);
+  document.getElementById("cmdkList").innerHTML = filtered.map(it=>`
+    <div class="row" onclick="(${it.fn.toString()})()">
+      <div>
+        <div style="font-weight:950">${it.label}</div>
+        <div class="small">${it.meta}</div>
+      </div>
+      <span class="kbd">Enter</span>
+    </div>
+  `).join("");
+}
+
+/* ===================== DASHBOARD BUILDER ===================== */
+function gridSize(){
+  const wrap=document.getElementById("canvas");
+  const rect=wrap.getBoundingClientRect();
+  const cols=ui.dash.cols, gap=ui.dash.gap;
+  const colW=(rect.width-(cols-1)*gap)/cols;
+  return {rect, cols, gap, colW, rowH:ui.dash.rowH};
+}
+function tileRect(t){
+  const gs=gridSize();
+  const left=t.x*(gs.colW+gs.gap);
+  const top=t.y*(gs.rowH+gs.gap);
+  const width=t.w*gs.colW+(t.w-1)*gs.gap;
+  const height=t.h*gs.rowH+(t.h-1)*gs.gap;
+  return {left, top, width, height};
+}
+
+function dailyIncomeSeries(range){
+  const f=parseDate(range.from), t=parseDate(range.to);
+  const days=Math.round((t-f)/86400000)+1;
+  const out=[];
+  for(let i=0;i<days;i++){ 
+    const d=new Date(f.getTime()+i*86400000);
+    const ds=d.toISOString().slice(0,10);
+    const v=demo.docs.filter(x=>x.kind==="חשבונית" && x.paidDate===ds && ["שולמה","שולמה חלקית"].includes(x.status)).reduce((s,x)=>s+x.paidAmount,0);
+    out.push({ds,v});
+  }
+  return out;
+}
+function renderLineChart(series, seriesPrev){
+  const max=Math.max(1, ...series.map(s=>s.v), ...(seriesPrev?seriesPrev.map(s=>s.v):[]));
+  const pts=(ser)=>ser.map((s,i)=>{ const x=(i/(Math.max(1,ser.length-1)))*100; const y=100-(s.v/max)*80-10; return `${x.toFixed(2)},${y.toFixed(2)}`; }).join(" ");
+  const bars=series.map((s,i)=>{ const x=(i/(series.length))*100; const w=100/series.length-0.8; const h=(s.v/max)*80; const y=100-h-10; return `<rect x="${x+0.4}" y="${y}" width="${w}" height="${h}" rx="2.2" ry="2.2" fill="rgba(87,155,252,.20)"/>`; }).join("");
+  const prevLine=seriesPrev?`<polyline fill="none" stroke="rgba(168,85,247,.70)" stroke-width="1.4" points="${pts(seriesPrev)}"/>`:"";
+  return `<div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:100%">${bars}${prevLine}<polyline fill="none" stroke="rgba(87,155,252,.95)" stroke-width="1.8" points="${pts(series)}"/></svg></div>`;
+}
+function staffPerfRows(){
+  const paid=demo.docs.filter(d=>d.kind==="חשבונית" && d.paidDate && inRange(d.paidDate) && ["שולמה","שולמה חלקית"].includes(d.status));
+  const by=new Map();
+  for(const d of paid){
+    const k=d.performer;
+    const cur=by.get(k)||{name:k,income:0,count:0};
+    cur.income+=d.paidAmount; cur.count+=1;
+    by.set(k,cur);
+  }
+  const rows=[...by.values()];
+  const total=rows.reduce((s,r)=>s+r.income,0)||1;
+  rows.forEach(r=>r.share=(r.income/total)*100);
+  rows.sort((a,b)=>b.income-a.income);
+  return rows.slice(0,7);
+}
+
+/* Drag / resize dashboard tiles */
+let dragState=null;
+function onPointerDown(e, tileId, mode){
+  e.preventDefault();
+  const tile=ui.dash.tiles.find(t=>t.id===tileId);
+  if(!tile) return;
+  dragState={mode,tileId,startX:e.clientX,startY:e.clientY,orig:{...tile},gs:gridSize()};
+  document.body.classList.add("dragging");
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", onPointerUp, {once:true});
+}
+function onPointerMove(e){
+  if(!dragState) return;
+  const tile=ui.dash.tiles.find(t=>t.id===dragState.tileId);
+  if(!tile) return;
+  const dx=e.clientX-dragState.startX;
+  const dy=e.clientY-dragState.startY;
+  const gs=dragState.gs;
+  const unitX=gs.colW+gs.gap;
+  const unitY=gs.rowH+gs.gap;
+  if(dragState.mode==="move"){
+    const nx=Math.round((dragState.orig.x*unitX+dx)/unitX);
+    const ny=Math.round((dragState.orig.y*unitY+dy)/unitY);
+    tile.x=clamp(nx,0,gs.cols-tile.w);
+    tile.y=clamp(ny,0,200);
+  } else {
+    const nw=Math.round((dragState.orig.w*unitX+dx)/unitX);
+    const nh=Math.round((dragState.orig.h*unitY+dy)/unitY);
+    tile.w=clamp(nw,2,gs.cols-tile.x);
+    tile.h=clamp(nh,2,16);
+  }
+  renderDashboard();
+}
+function onPointerUp(){
+  document.body.classList.remove("dragging");
+  window.removeEventListener("pointermove", onPointerMove);
+  dragState=null;
+}
+
+function renderTileContent(tile, summary, prevSummary){
+  const colors={blue:"var(--blue)",purple:"var(--purple)",green:"var(--green)",amber:"var(--amber)",red:"var(--red)",teal:"var(--teal)",pink:"var(--pink)",indigo:"var(--indigo)"};
+  const dot=`<span class="dot" style="background:${colors[tile.color]||'var(--blue)'}"></span>`;
+  if(tile.type==="kpi"){
+    const curr=summary[tile.metric]||0;
+    const prev=prevSummary?(prevSummary[tile.metric]||0):0;
+    const dP=ui.compare?deltaPill(curr,prev):"";
+    const hint = tile.metric==="expectedIncome" ? "צפוי (מאושרות + פתוחות)" : (tile.metric==="actualIncome" ? "לפי תשלומים" : "בטווח נבחר");
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge blue">KPI</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        <div class="kpiVal">${money(curr)}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          ${dP}
+          <span class="pill ${tile.color}">${hint}</span>
+        </div>
+        <div class="small" style="margin-top:10px">טווח: ${ui.range.from}–${ui.range.to}</div>
+      </div>
+    `;
+  }
+  if(tile.type==="chart"){
+    const ser=dailyIncomeSeries(ui.range);
+    const prev=ui.compare?dailyIncomeSeries(prevRange()):null;
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge purple">גרף</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        ${renderLineChart(ser,prev)}
+        <div class="small" style="margin-top:8px">הכנסה לפי יום (לפי תאריך תשלום).</div>
+      </div>
+    `;
+  }
+  if(tile.type==="table" && tile.table==="staff_perf"){
+    const rows=staffPerfRows();
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge teal">טבלה</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        <div class="tableWrap">
+          <table>
+            <tr><th>עובד</th><th>הכנסה</th><th>מס׳ מסמכים</th><th>תרומה</th></tr>
+            ${rows.map(r=>`<tr><td style="font-weight:950">${r.name}</td><td>${money(r.income)}</td><td>${r.count}</td><td>${r.share.toFixed(1)}%</td></tr>`).join("")}
+          </table>
+        </div>
+        <div class="small" style="margin-top:8px">בהמשך: עמלות + עלויות + רווח לפי עובד.</div>
+      </div>
+    `;
+  }
+  if(tile.type==="table" && tile.table==="docs_attention"){
+    const docs=demo.docs.filter(d=>d.kind==="חשבונית" && inRange(d.createdDate)).filter(d=>["פתוחה","באיחור","שולמה חלקית"].includes(d.status)).slice(0,8);
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge red">פעולות</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        <div class="tableWrap">
+          <table>
+            <tr><th>מס׳</th><th>לקוח</th><th>סטטוס</th><th>סכום</th><th>מבצע</th></tr>
+            ${(docs.length?docs.map(d=>`<tr onclick="openDoc(${d.no})"><td>#${d.no}</td><td>${d.customerName}</td><td>${d.status}</td><td>${money(d.total)}</td><td>${d.performer}</td></tr>`).join(""):`<tr><td colspan="5" class="small">אין מסמכים פתוחים בטווח</td></tr>`)}
+          </table>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="toast('דמו: תזכורת נשלחה', 'blue')">שלח תזכורת</button>
+          <button class="btn" onclick="go('docs')">פתח מסמכים</button>
+        </div>
+      </div>
+    `;
+  }
+  if(tile.type==="todo"){
+    const open=getOpenTasksSorted().slice(0,7);
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge amber">To‑Do</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        <div class="small" style="margin-bottom:10px">לחץ לפתיחה/עדכון</div>
+        <div class="tableWrap">
+          <table>
+            <tr><th>משימה</th><th>שיוך</th><th>עדיפות</th><th>שלב</th></tr>
+            ${(open.length?open.map(t=>`<tr onclick="openTask('${t.id}')"><td style="font-weight:950">${t.source==="AI"?"🤖 ":""}${t.title}</td><td>${t.assignee}</td><td><span class="badge ${t.priority==="גבוהה"?"red":t.priority==="בינונית"?"amber":"teal"}">${t.priority}</span></td><td><span class="badge ${t.stage==="בתהליך"?"blue":t.stage==="בוצע"?"teal":"purple"}">${t.stage}</span></td></tr>`).join(""):`<tr><td colspan="4" class="small">אין משימות פתוחות</td></tr>`)}
+          </table>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="quickCreateTask()">+ משימה</button>
+          <button class="btn" onclick="toggleFloatTodo()">פתח To‑Do צף</button>
+        </div>
+      </div>
+    `;
+  }
+  if(tile.type==="custom"){
+    return `
+      <div class="tileHead dragArea">
+        <div class="t">${dot}<span>${tile.title}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge indigo">מותאם</span>
+          <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+        </div>
+      </div>
+      <div class="tileBody">
+        <div class="small">בלוק מותאם (דמו): ${tile.view}</div>
+        <div style="margin-top:10px" class="miniGrid">
+          <div class="card" style="box-shadow:none;border-radius:16px">
+            <div class="cardHead"><div class="t">הערה</div><span class="badge purple">AI</span></div>
+            <div class="cardBody small">במוצר: ווידג׳ט חופשי לפי תבניות + SQL/Filters.</div>
+          </div>
+          <div class="card" style="box-shadow:none;border-radius:16px">
+            <div class="cardHead"><div class="t">פעולה</div><span class="badge teal">Quick</span></div>
+            <div class="cardBody small">במוצר: כפתורי פעולה לפי הרשאות.</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="tileHead dragArea">
+      <div class="t">${dot}<span>${tile.title}</span></div>
+      <button class="btn icon" onclick="removeTile('${tile.id}')" title="הסר">✕</button>
+    </div>
+    <div class="tileBody"><div class="small">תוכן (דמו)</div></div>
+  `;
+}
+
+function removeTile(id){
+  ui.dash.tiles = ui.dash.tiles.filter(t=>t.id!==id);
+  toast("ווידג׳ט הוסר", "amber");
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const page=document.getElementById("page");
+  const s=calcSummary(ui.range);
+  const prev=ui.compare?calcSummary(prevRange()):null;
+
+  page.innerHTML = `
+    <div class="card" style="grid-column:1/-1">
+      <div class="cardHead">
+        <div class="t">Dashboard Builder</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <span class="pill blue">גרירה / Resize</span>
+          <span class="pill purple">Add Widget</span>
+          <span class="pill teal">AI Builder</span>
+          <button class="btn primary" onclick="openWidgetBuilder()">＋ Add Widget</button>
+          <button class="btn pink" onclick="openAIBuild()">AI Builder</button>
+          <button class="btn" onclick="saveLayout()">שמור Layout</button>
+        </div>
+      </div>
+      <div class="cardBody">
+        <div class="small">זה דמו של מוצר אמיתי: ווידג׳טים ניתנים להזזה/שינוי גודל + תוספת ווידג׳טים לפי תבניות (כולל AI).</div>
+        <div class="canvas" id="canvas" style="margin-top:12px">
+          <div class="canvasBg"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const canvas=document.getElementById("canvas");
+  const maxY=Math.max(0,...ui.dash.tiles.map(t=>t.y+t.h));
+  canvas.style.minHeight = (maxY*(ui.dash.rowH+ui.dash.gap) + 80) + "px";
+
+  for(const tile of ui.dash.tiles){
+    const r=tileRect(tile);
+    const el=document.createElement("div");
+    el.className="tile";
+    el.style.left=r.left+"px"; el.style.top=r.top+"px"; el.style.width=r.width+"px"; el.style.height=r.height+"px";
+    el.innerHTML = `
+      ${renderTileContent(tile, s, prev)}
+      <div class="handle" title="Resize"></div>
+    `;
+    el.querySelector(".dragArea")?.addEventListener("pointerdown",(e)=>onPointerDown(e,tile.id,"move"));
+    el.querySelector(".handle")?.addEventListener("pointerdown",(e)=>onPointerDown(e,tile.id,"resize"));
+    canvas.appendChild(el);
+  }
+}
+
+/* Widget Builder */
+const WIDGET_LIBRARY = [
+  {type:"kpi", title:"KPI: הכנסה בפועל", color:"blue", metric:"actualIncome", w:3, h:2},
+  {type:"kpi", title:"KPI: הכנסה צפויה", color:"purple", metric:"expectedIncome", w:3, h:2},
+  {type:"kpi", title:"KPI: הוצאות", color:"amber", metric:"totalExpenses", w:3, h:2},
+  {type:"kpi", title:"KPI: רווח", color:"green", metric:"netProfit", w:3, h:2},
+  {type:"chart", title:"גרף: מגמת הכנסות", color:"blue", chart:"line_income", w:7, h:4},
+  {type:"table", title:"טבלה: ביצועים לפי עובד", color:"teal", table:"staff_perf", w:5, h:4},
+  {type:"table", title:"טבלה: מסמכים פתוחים/באיחור", color:"red", table:"docs_attention", w:7, h:4},
+  {type:"todo", title:"To‑Do: משימות פתוחות", color:"amber", w:5, h:4},
+  {type:"custom", title:"Custom: ROI שיווק", color:"purple", view:"marketing_roi", w:6, h:4},
+  {type:"custom", title:"Custom: מלאי נמוך", color:"amber", view:"low_stock", w:6, h:4},
+];
+
+function openWidgetBuilder(){
+  const cards = WIDGET_LIBRARY.map((w,idx)=>`
+    <div class="card" style="box-shadow:none">
+      <div class="cardHead">
+        <div class="t">${w.title}</div>
+        <span class="badge ${w.color==="red"?"red":w.color==="amber"?"amber":w.color==="teal"?"teal":w.color==="purple"?"purple":"blue"}">${w.type}</span>
+      </div>
+      <div class="cardBody">
+        <div class="small">גודל: ${w.w}×${w.h} • צבע: ${w.color}</div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="addWidget(${idx})">הוסף לדשבורד</button>
+          <button class="btn" onclick="toast('דמו: Preview', 'blue')">Preview</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  openModal("Widget Library", `
+    <div class="cols">
+      <div class="card">
+        <div class="small">בחר ווידג׳ט מוכן (כמו Monday Widgets). אפשר גם ליצור Custom / AI‑Generated.</div>
+        <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px">
+          ${cards}
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">Custom Widget</div><span class="badge indigo">PRO</span></div>
+        <div class="cardBody">
+          <div class="small">בדמו: מייצרים ווידג׳ט “כללי”. במוצר: פילטרים, SQL, תבניות UI.</div>
+          <textarea id="customWidgetTitle" placeholder="כותרת ווידג׳ט (לדוגמה: לידים השבוע)"></textarea>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <select id="customWidgetColor">
+              <option value="blue">כחול</option>
+              <option value="purple">סגול</option>
+              <option value="teal">טורקיז</option>
+              <option value="amber">כתום</option>
+              <option value="red">אדום</option>
+            </select>
+            <select id="customWidgetView">
+              <option value="note">הערה/טקסט</option>
+              <option value="table">טבלה</option>
+              <option value="pie">עוגה</option>
+              <option value="bar">בר</option>
+            </select>
+          </div>
+          <button class="btn pink" style="margin-top:10px" onclick="addCustomWidget()">צור והוסף</button>
+          <hr style="margin:14px 0">
+          <button class="btn teal" onclick="openAIBuild()">AI Builder (הוסף אוטומטית)</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+function addWidget(idx){
+  const w=WIDGET_LIBRARY[idx];
+  const id=uuid("w");
+  ui.dash.tiles.push({id, ...w, x:0, y:12, w:w.w, h:w.h});
+  toast("ווידג׳ט נוסף: "+w.title, "teal");
+  closeModal();
+  renderDashboard();
+}
+function addCustomWidget(){
+  const title=(document.getElementById("customWidgetTitle").value||"").trim()||"ווידג׳ט מותאם";
+  const color=document.getElementById("customWidgetColor").value;
+  const view=document.getElementById("customWidgetView").value;
+  ui.dash.tiles.push({id:uuid("cw"), type:"custom", title, color, view, x:0, y:12, w:6, h:4});
+  toast("נוסף Custom Widget", "purple");
+  closeModal();
+  renderDashboard();
+}
+function saveLayout(){
+  toast("Layout נשמר (דמו)", "teal");
+  notifications.unshift({id:uuid("n"), ts:new Date().toLocaleString("he-IL"), title:"Layout נשמר", body:"הדשבורד נשמר בהגדרות המשתמש", tone:"teal"});
+  setNotifDot();
+}
+
+/* AI Builder */
+function openAIBuild(){
+  openModal("AI Builder • תאר מה תרצה לראות", `
+    <div class="cols">
+      <div class="card">
+        <div class="small">כתוב בעברית פשוטה. הדמו יציע ווידג׳טים רלוונטיים. (במוצר: יצירת Layout + Widgets + Filters)</div>
+        <textarea id="ai_prompt" placeholder="לדוגמה: תראה לי הוצאות לפי קטגוריה ועובד + מלאי נמוך"></textarea>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn pink" onclick="aiSuggest()">הצע</button>
+          <button class="btn" onclick="closeModal()">סגור</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">הצעות</div><span class="badge purple">AI</span></div>
+        <div class="cardBody" id="ai_suggestions" class="small">עדיין אין הצעות.</div>
+      </div>
+    </div>
+  `);
+}
+function aiSuggest(){
+  const txt=(document.getElementById("ai_prompt").value||"").trim().toLowerCase();
+  if(!txt) return;
+  const sugg=[];
+  if(txt.includes("הוצאות")) sugg.push({title:"הוצאות לפי קטגוריה (עוגה)", type:"custom", color:"amber", view:"pie", w:6, h:4});
+  if(txt.includes("מלאי") || txt.includes("חלפים")) sugg.push({title:"מלאי נמוך", type:"custom", color:"amber", view:"low_stock", w:6, h:4});
+  if(txt.includes("עובד")) sugg.push({title:"ביצועים לפי עובד", type:"table", color:"teal", table:"staff_perf", w:5, h:4});
+  if(txt.includes("איחור") || txt.includes("באיחור")) sugg.push({title:"מסמכים באיחור", type:"table", color:"red", table:"docs_attention", w:7, h:4});
+  if(txt.includes("הכנסה") || txt.includes("מכירות")) sugg.push({title:"מגמת הכנסות", type:"chart", color:"blue", chart:"line_income", w:7, h:4});
+  if(txt.includes("משימות") || txt.includes("טודו")) sugg.push({title:"משימות פתוחות", type:"todo", color:"amber", w:5, h:4});
+  while(sugg.length<3) sugg.push({title:"Custom: KPI נוסף", type:"custom", color:"purple", view:"kpi", w:6, h:3});
+  const unique=[]; const seen=new Set();
+  for(const s of sugg){ if(!seen.has(s.title)){ unique.push(s); seen.add(s.title); } if(unique.length>=3) break; }
+  window.__ai_sugg=unique;
+  document.getElementById("ai_suggestions").innerHTML = unique.map((s,i)=>`
+    <div class="card" style="box-shadow:none;margin-bottom:10px">
+      <div class="cardHead">
+        <div class="t">#${i+1} ${s.title}</div>
+        <button class="btn primary" onclick="aiAdd(${i})">הוסף</button>
+      </div>
+      <div class="cardBody small">סוג: ${s.type} • גודל: ${s.w}×${s.h} • צבע: ${s.color}</div>
+    </div>
+  `).join("");
+}
+function aiAdd(idx){
+  const s=(window.__ai_sugg||[])[idx];
+  if(!s) return;
+  ui.dash.tiles.push({id:uuid("aiw"), ...s, x:0, y:12, w:s.w, h:s.h});
+  toast("AI הוסיף ווידג׳ט: "+s.title, "purple");
+  closeModal();
+  renderDashboard();
+}
+
+/* AI Insights */
+function openAI(){
+  const s=calcSummary(ui.range);
+  const list=aiInsights(s).map(x=>`
+    <div class="card" style="box-shadow:none;margin-bottom:10px">
+      <div class="cardHead">
+        <div class="t">🤖 ${x.t}</div>
+        <span class="badge ${x.sev==='red'?'red':x.sev==='amber'?'amber':'teal'}">${x.sev}</span>
+      </div>
+      <div class="cardBody">
+        <div class="small">${x.d}</div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn teal" onclick="createTaskFromInsight('${x.t.replaceAll("'","\\'")}')">צור משימה</button>
+          <button class="btn" onclick="toast('דמו: פעולה בוצעה', 'blue')">בצע פעולה</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  openModal("AI תובנות", list || `<div class="small">אין תובנות בטווח</div>`);
+}
+function createTaskFromInsight(title){ ensureTask("טפל: "+title, {source:"AI", priority:"בינונית", assignee:"איציק", stage:"פתוח", due:ui.range.to}); closeModal(); render(); }
+
+/* Notifications */
+function openNotifications(){
+  const rows = notifications.slice(0,12).map(n=>`
+    <div class="card" style="box-shadow:none;margin-bottom:10px">
+      <div class="cardHead">
+        <div class="t">${n.title}</div>
+        <span class="badge ${n.tone==='red'?'red':n.tone==='amber'?'amber':n.tone==='teal'?'teal':'blue'}">${n.ts}</span>
+      </div>
+      <div class="cardBody small">${n.body}</div>
+    </div>
+  `).join("");
+  openModal("התראות", `
+    <div class="cols">
+      <div class="card">
+        <div class="cardHead"><div class="t">מרכז התראות</div><button class="btn" onclick="clearNotifications()">נקה</button></div>
+        <div class="cardBody">${rows || '<div class="small">אין התראות</div>'}</div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">דמו</div><span class="badge purple">PRO</span></div>
+        <div class="cardBody small">
+          במוצר: התראות בזמן אמת (WebSockets), דחיפות, שקט, חוקים.<br/><br/>
+          <button class="btn primary" onclick="pushDemoNotif()">הוסף התראה לדמו</button>
+        </div>
+      </div>
+    </div>
+  `);
+  notifications = notifications; // keep
+  setNotifDot(); // still on until clear
+}
+function clearNotifications(){
+  notifications=[];
+  setNotifDot();
+  toast("התראות נוקו", "teal");
+  closeModal();
+}
+function pushDemoNotif(){
+  notifications.unshift({id:uuid("n"), ts:new Date().toLocaleString("he-IL"), title:"דמו: אירוע חדש", body:"נוצר מסמך חדש/תור חדש/תשלום התקבל", tone:"blue"});
+  setNotifDot();
+  toast("התראה נוספה", "blue");
+}
+
+/* ===================== TASKS ===================== */
+function refreshBadges(){
+  document.getElementById("roleBadge").textContent=ui.role;
+  setNotifDot();
+}
+function getOpenTasksSorted(){
+  const pr=(p)=>({"גבוהה":3,"בינונית":2,"נמוכה":1}[p]||2);
+  return tasks.filter(t=>t.status==="פתוחה")
+    .sort((a,b)=>(pr(b.priority)-pr(a.priority)) || String(a.due).localeCompare(b.due));
+}
+function renderFloatTodo(){
+  const body=document.getElementById("floatTodoBody");
+  const open=getOpenTasksSorted().slice(0,10);
+  body.innerHTML = open.map(t=>`
+    <div class="taskRow" onclick="openTask('${t.id}')">
+      <div style="flex:1">
+        <div class="t">${t.source==="AI"?"🤖 ":""}${t.title}</div>
+        <div class="m">${t.assignee} • יעד: ${t.due||"—"}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <span class="badge ${t.priority==="גבוהה"?"red":t.priority==="בינונית"?"amber":"teal"}">${t.priority}</span>
+        <span class="badge ${t.stage==="בתהליך"?"blue":t.stage==="בוצע"?"teal":"purple"}">${t.stage}</span>
+      </div>
+    </div>
+  `).join("") || `<div class="small">אין משימות פתוחות</div>`;
+}
+function toggleFloatTodo(forceClose=false){
+  if(forceClose) ui.floatTodo=false;
+  else ui.floatTodo=!ui.floatTodo;
+  document.getElementById("floatTodo").classList.toggle("hidden", !ui.floatTodo);
+  if(ui.floatTodo) renderFloatTodo();
+}
+function quickCreateTask(){
+  const assignees = demo.users.map(u=>`<option value="${u.name}">${u.name}</option>`).join("");
+  openModal("יצירת משימה", `
+    <div class="cols">
+      <div class="card">
+        <div class="small">כמו Monday: כותרת, שיוך, עדיפות, שלב. (דמו)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <div style="grid-column:1 / -1">
+            <div class="small">כותרת</div>
+            <input id="t_title" placeholder="לדוגמה: להתקשר ליובל" />
+          </div>
+          <div>
+            <div class="small">שיוך</div>
+            <select id="t_assignee">${assignees}</select>
+          </div>
+          <div>
+            <div class="small">עדיפות</div>
+            <select id="t_priority"><option>נמוכה</option><option selected>בינונית</option><option>גבוהה</option></select>
+          </div>
+          <div>
+            <div class="small">יעד</div>
+            <input id="t_due" type="date" value="${ui.range.to}"/>
+          </div>
+          <div>
+            <div class="small">שלב</div>
+            <select id="t_stage"><option selected>פתוח</option><option>בתהליך</option><option>בוצע</option></select>
+          </div>
+          <div style="grid-column:1 / -1">
+            <div class="small">מקור</div>
+            <select id="t_source"><option selected>ידני</option><option>AI</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn primary" onclick="saveTask()">שמור</button>
+          <button class="btn" onclick="closeModal()">ביטול</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">אוטומציות מומלצות</div><span class="badge purple">AI</span></div>
+        <div class="cardBody small">
+          חשבונית באיחור → משימה למנהל<br/>
+          הצעה ממתינה → פולואפ לעובד<br/>
+          ROI נמוך → עצירת קמפיין<br/>
+          מלאי נמוך → התראה לרכש
+          <hr style="margin:12px 0">
+          <button class="btn pink" onclick="go('automations'); closeModal();">פתח אוטומציות</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+function saveTask(){
+  const title=(document.getElementById("t_title").value||"").trim();
+  if(!title) return toast("חייבים כותרת למשימה", "red");
+  tasks.unshift({id:uuid("t"), title, priority:document.getElementById("t_priority").value, status:"פתוחה", stage:document.getElementById("t_stage").value, assignee:document.getElementById("t_assignee").value, due:document.getElementById("t_due").value, source:document.getElementById("t_source").value});
+  toast("משימה נשמרה", "teal");
+  renderFloatTodo(); closeModal(); render();
+}
+function openTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  openModal("משימה", `
+    <div class="card">
+      <div class="cardHead">
+        <div class="t">${t.source==="AI"?"🤖 ":""}${t.title}</div>
+        <span class="badge ${t.priority==="גבוהה"?"red":t.priority==="בינונית"?"amber":"teal"}">${t.priority}</span>
+      </div>
+      <div class="cardBody">
+        <div class="small">שיוך: <b>${t.assignee}</b> • יעד: <b>${t.due||"—"}</b> • מקור: <b>${t.source}</b></div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn teal" onclick="moveTask('${t.id}','בוצע')">סמן בוצע</button>
+          <button class="btn" onclick="moveTask('${t.id}','בתהליך')">העבר לבתהליך</button>
+          <button class="btn" onclick="moveTask('${t.id}','פתוח')">העבר לפתוח</button>
+          <button class="btn primary" onclick="go('tasks'); closeModal();">פתח Board</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+function moveTask(id, stage){
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  t.stage=stage;
+  if(stage==="בוצע") t.status="בוצע"; else t.status="פתוחה";
+  toast("עודכן שלב משימה", "teal");
+  renderFloatTodo(); closeModal(); render();
+}
+
+/* ===================== PAGES ===================== */
+function openCustomer(no){
+  const c=demo.customers.find(x=>x.no===no)||demo.customers.find(x=>String(x.no)===String(no));
+  if(!c) return;
+  openModal("לקוח", `
+    <div class="cols">
+      <div class="card">
+        <div class="cardHead"><div class="t">${c.name}</div><span class="badge blue">#${c.no}</span></div>
+        <div class="cardBody small">
+          טלפון: ${c.phone}<br/>
+          אימייל: ${c.email}<br/>
+          כתובת: ${c.address}<br/>
+          <hr style="margin:12px 0">
+          אחרי שמירת לקוח (כמו שביקשת):<br/>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn purple" onclick="toast('דמו: הצעת מחיר נוצרה', 'purple')">שלח הצעת מחיר</button>
+            <button class="btn primary" onclick="toast('דמו: חשבונית נוצרה', 'blue')">הוצא חשבונית</button>
+            <button class="btn" onclick="closeModal()">חזור לרשימה</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">הערות AI</div><span class="badge purple">AI</span></div>
+        <div class="cardBody small">
+          במוצר: AI מסכם שיחות/מיילים עם הלקוח, מציע פולואפים ומסווג לידים.
+          <hr style="margin:12px 0">
+          <button class="btn teal" onclick="ensureTask('פולואפ ללקוח: ${c.name}', {source:'AI', priority:'בינונית', assignee:'מיכל', stage:'פתוח', due:ui.range.to}); closeModal();">צור משימת פולואפ</button>
+        </div>
+      </div>
+    </div>
+  `);
+}
+function openDoc(no){ openModal("מסמך", `<div class="small">פתיחת מסמך #${no} (דמו). במוצר: תצוגה מלאה + עריכה + סטטוסים + היסטוריה.</div>`); }
+function openAppt(a){ openModal("תור", `<div class="small"><b>${a.customerName}</b><br/>תאריך: ${a.date} ${a.time}<br/>שירות: ${a.service}<br/>עובד: ${a.staff}<br/>סטטוס: ${a.status}</div>`); }
+
+function renderCustomers(){
+  const q=(document.getElementById("globalSearch").value||"").trim();
+  const rows=demo.customers.filter(c=>!q||String(c.no).includes(q)||c.name.includes(q)||c.phone.includes(q)||c.email.includes(q)).slice(0,60)
+    .map(c=>`<tr onclick="openCustomer(${c.no})"><td>${c.no}</td><td style="font-weight:950">${c.name}</td><td>${c.phone}</td><td>${c.email}</td><td>${c.address}</td></tr>`).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">לקוחות</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="openModal('הוספת לקוח','בדמו: טופס. במוצר: לאחר שמירה קופץ מסך פעולות (הצעת מחיר / חשבונית).')">+ הוספת לקוח</button>
+            <button class="btn" onclick="toast('דמו: ייבוא CSV', 'blue')">ייבוא CSV</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">מס׳ לקוח רץ (ספרות בלבד) + אימייל + כתובת. לחיצה על לקוח → פעולות.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>מס׳</th><th>שם</th><th>טלפון</th><th>אימייל</th><th>כתובת</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDocs(){
+  const q=(document.getElementById("globalSearch").value||"").trim();
+  const docs=demo.docs.filter(d=>inRange(d.createdDate)).filter(d=>!q||String(d.no).includes(q)||d.customerName.includes(q)||String(d.customerNo).includes(q)).sort((a,b)=>b.no-a.no).slice(0,30);
+  const rows=docs.map(d=>`
+    <tr onclick="openDoc(${d.no})">
+      <td>${d.kind}</td><td>#${d.no}</td>
+      <td>${d.customerName} <span class="small">(#${d.customerNo})</span></td>
+      <td>${d.status}</td>
+      <td>${money(d.total)}</td>
+      <td><span class="pill teal">${d.performer}</span></td>
+    </tr>
+  `).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">מסמכים</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn purple" onclick="toast('דמו: יצירת הצעת מחיר', 'purple')">+ הצעת מחיר</button>
+            <button class="btn primary" onclick="toast('דמו: יצירת חשבונית', 'blue')">+ חשבונית</button>
+            <button class="btn" onclick="toast('דמו: סינון מתקדם', 'blue')">סינון מתקדם</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">סטטוסים: פתוח/באיחור/שולם/ממתין לאישור/בוטל. כולל “מבצע עבודה”.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>סוג</th><th>מס׳</th><th>לקוח</th><th>סטטוס</th><th>סכום</th><th>מבצע</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCalendar(){
+  const ap=demo.appts.filter(a=>inRange(a.date)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,28);
+  const rows=ap.map(a=>`<tr><td>${a.date}</td><td>${a.time}</td><td>${a.customerName}</td><td>${a.service}</td><td>${a.staff}</td><td>${a.status}</td></tr>`).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">יומן תורים</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="toast('דמו: תור נקבע', 'teal')">+ קבע תור</button>
+            <button class="btn" onclick="toast('דמו: סנכרון גוגל קלנדר', 'blue')">סנכרון Google Calendar</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">שלב מתקדם: ללקוח קצה תהיה אפליקציה לקביעת תור → הפרטים ייכנסו אוטומטית.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>תאריך</th><th>שעה</th><th>לקוח</th><th>שירות</th><th>עובד</th><th>סטטוס</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTasks(){
+  const q=(document.getElementById("globalSearch").value||"").trim().toLowerCase();
+  const filtered = tasks.filter(t=>!q || (t.title+t.assignee+t.priority+t.stage).toLowerCase().includes(q));
+  const stages=["פתוח","בתהליך","בוצע"];
+  const col = (st)=>`
+    <div class="card" style="grid-column:span 4;min-height:260px">
+      <div class="cardHead">
+        <div class="t">${st}</div>
+        <span class="badge ${st==="בוצע"?"teal":st==="בתהליך"?"blue":"purple"}">${filtered.filter(t=>t.stage===st).length}</span>
+      </div>
+      <div class="cardBody">
+        ${(filtered.filter(t=>t.stage===st).map(t=>`
+          <div class="card" style="box-shadow:none;margin-bottom:10px;border-radius:16px">
+            <div class="cardHead">
+              <div class="t" style="font-size:13px">${t.source==="AI"?"🤖 ":""}${t.title}</div>
+              <span class="badge ${t.priority==="גבוהה"?"red":t.priority==="בינונית"?"amber":"teal"}">${t.priority}</span>
+            </div>
+            <div class="cardBody small">
+              ${t.assignee} • יעד: ${t.due||"—"}
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn" onclick="openTask('${t.id}')">פתח</button>
+                <button class="btn teal" onclick="moveTask('${t.id}','בוצע')">בוצע</button>
+              </div>
+            </div>
+          </div>
+        `).join("") || `<div class="small">אין משימות</div>`)}
+      </div>
+    </div>
+  `;
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">משימות (Board)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="quickCreateTask()">+ משימה</button>
+            <button class="btn pink" onclick="runAuto(); render()">הרץ אוטומציות</button>
+          </div>
+        </div>
+        <div class="cardBody small">בדמו: Board כמו Monday (במוצר: Drag&Drop מלא בין עמודות).</div>
+      </div>
+      ${stages.map(col).join("")}
+    </div>
+  `;
+}
+
+function renderExpenses(){
+  const ex=demo.expenses.filter(e=>inRange(e.date)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,32);
+  const rows=ex.map(e=>`<tr><td>${e.date}</td><td>${e.category}</td><td>${money(e.amount)}</td><td>${e.source}</td><td>${e.staff||"כללית"}</td></tr>`).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">הוצאות</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="toast('דמו: הוצאה נוספה', 'amber')">+ הוסף הוצאה</button>
+            <button class="btn" onclick="toast('דמו: העלאת קבלה', 'blue')">העלה קבלה</button>
+            <button class="btn" onclick="toast('דמו: קטגוריות מותאמות', 'blue')">קטגוריות</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">כולל אינטגרציה עתידית ל‑Google Ads/Meta כהוצאה אוטומטית.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>תאריך</th><th>קטגוריה</th><th>סכום</th><th>מקור</th><th>שיוך</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderInventory(){
+  const rows=inventory.map(i=>`<tr><td>${i.sku}</td><td style="font-weight:950">${i.name}</td><td>${i.qty}</td><td>${i.unit}</td><td>${money(i.cost)}</td><td>${money(i.cost*i.qty)}</td></tr>`).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">מלאי</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="toast('דמו: פריט נוסף', 'teal')">+ פריט</button>
+            <button class="btn" onclick="toast('דמו: קישור להוצאות', 'blue')">קישור להוצאות</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">מלאי כללי שמתאים לכל עסק (מסעדה/מוסך/מספרה). בהמשך: ניכוי אוטומטי במסמך.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>SKU</th><th>שם</th><th>כמות</th><th>יחידה</th><th>עלות יח׳</th><th>שווי מלאי</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMarketing(){
+  const rows=marketing.filter(m=>inRange(m.date)).map(m=>{
+    const roi = m.spend>0 ? (m.revenue/m.spend) : 0;
+    const tone = roi<1 ? "red" : roi<1.5 ? "amber" : "teal";
+    return `<tr><td>${m.date}</td><td>${m.channel}</td><td>${money(m.spend)}</td><td>${m.leads}</td><td>${money(m.revenue)}</td><td><span class="badge ${tone}">${roi.toFixed(1)}×</span></td></tr>`;
+  }).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">שיווק (Google Ads / Meta)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="toast('דמו: חיבור Google Ads', 'blue')">חבר Google Ads</button>
+            <button class="btn" onclick="toast('דמו: חיבור Meta', 'blue')">חבר Meta</button>
+            <button class="btn pink" onclick="openAI()">AI תובנות ROI</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">היעד: להכניס הוצאות פרסום אוטומטית להוצאות + לראות ROI ותוצאות.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>תאריך</th><th>ערוץ</th><th>הוצאה</th><th>לידים</th><th>הכנסה מיוחסת</th><th>ROI</th></tr>
+              ${rows || `<tr><td colspan="6" class="small">אין נתונים בטווח</td></tr>`}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCommunications(){
+  const rows=comms.map(c=>`<tr><td>${c.ts}</td><td>${c.type}</td><td>${c.from}</td><td>${c.summary}</td><td><span class="badge ${c.sentiment==="חיובי"?"teal":c.sentiment==="ניטרלי"?"blue":"red"}">${c.sentiment}</span></td></tr>`).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">שיחות / מיילים (ניתוח AI)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="toast('דמו: חיבור מקור שיחות', 'blue')">חבר Call Source</button>
+            <button class="btn" onclick="toast('דמו: חיבור Gmail/Outlook', 'blue')">חבר מייל</button>
+            <button class="btn pink" onclick="toast('דמו: ניתוח שיחה', 'purple')">נתח שיחה</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">במוצר: הקלטה/תמלול/סיכום/משימות אוטומטיות/סנטימנט.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>זמן</th><th>סוג</th><th>מאת</th><th>סיכום</th><th>סנטימנט</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAutomations(){
+  const rows=automations.map(a=>`
+    <tr>
+      <td style="font-weight:950">${a.name}</td>
+      <td class="small">${a.if} → ${a.then}</td>
+      <td><span class="badge ${a.severity==="גבוהה"?"red":"amber"}">${a.severity}</span></td>
+      <td><button class="btn ${a.enabled?"teal":"ghost"}" onclick="toggleAutomation('${a.id}')">${a.enabled?"פעיל":"כבוי"}</button></td>
+    </tr>
+  `).join("");
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">אוטומציות (IF/THEN)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="runAuto(); render()">הרץ עכשיו</button>
+            <button class="btn pink" onclick="openModal('יצירת אוטומציה','בדמו: Builder. במוצר: תנאים + פעולות + לוג.')">+ אוטומציה</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="small">V1: חוקים בסיסיים. V2: Builder מלא + אינטגרציות.</div>
+          <div class="tableWrap" style="margin-top:12px">
+            <table>
+              <tr><th>שם</th><th>תנאי→פעולה</th><th>חומרה</th><th>סטטוס</th></tr>
+              ${rows}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function toggleAutomation(id){
+  const a=automations.find(x=>x.id===id); if(!a) return;
+  a.enabled=!a.enabled;
+  toast((a.enabled?"הופעלה":"כובתה")+" אוטומציה", a.enabled?"teal":"amber");
+  render();
+}
+
+function renderReports(){
+  document.getElementById("page").innerHTML = `
+    <div class="grid">
+      <div class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <div class="t">דוחות</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn primary" onclick="openWidgetBuilder()">בנה דוח (Widgets)</button>
+            <button class="btn pink" onclick="openAIBuild()">AI בונה דוח</button>
+          </div>
+        </div>
+        <div class="cardBody small">
+          בדמו: הדשבורד הוא “דוח חי”. במוצר: יצוא PDF/Excel, תבניות דוח, הרשאות לפי תפקיד.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* Settings: Screen Config */
+function openSettings(){
+  const rows = NAV_ITEMS.map(n=>{
+    const allowed = canAccess(n.id);
+    const checked = ui.screenConfig.show[n.key] ? "checked" : "";
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:8px;opacity:${allowed?1:0.5}">
+        <div>
+          <div style="font-weight:950">${n.label}</div>
+          <div class="small">${n.tag} • key: ${n.key}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="small">הצג</label>
+          <input type="checkbox" ${checked} ${allowed?"":"disabled"} onchange="toggleModule('${n.key}', this.checked)"/>
+        </div>
+      </div>
+    `;
+  }).join("");
+  openModal("הגדרות • עיצוב מסכים", `
+    <div class="cols">
+      <div class="card">
+        <div class="cardHead"><div class="t">Screen Designer</div><span class="badge indigo">PRO</span></div>
+        <div class="cardBody">
+          <div class="small">בעל העסק יכול לבחור אילו מסכים מופיעים. (כמו שביקשת: לכל מסך אפשר עיצוב נפרד — בדמו: Show/Hide)</div>
+          <div style="margin-top:12px">${rows}</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn primary" onclick="toast('נשמר (דמו)', 'teal')">שמור</button>
+            <button class="btn" onclick="closeModal()">סגור</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">תפקידים</div><span class="badge blue">RBAC</span></div>
+        <div class="cardBody small">
+          בדמו אפשר להחליף תפקיד כדי לראות הגבלות:<br/><br/>
+          <button class="btn full" onclick="setRole('Owner')">Owner <span class="badge blue">מלא</span></button>
+          <button class="btn full" onclick="setRole('Manager')">Manager <span class="badge teal">כמעט מלא</span></button>
+          <button class="btn full" onclick="setRole('Employee')">Employee <span class="badge amber">מוגבל</span></button>
+          <hr style="margin:12px 0">
+          עובד יכול: ליצור הצעת מחיר/חשבונית, לגבות תשלום, לראות דוחות של עצמו (בהמשך).<br/>
+          מנהל/בעלים: הכל + Builder + אוטומציות + דוחות.
+        </div>
+      </div>
+    </div>
+  `);
+}
+function toggleModule(key, val){ ui.screenConfig.show[key]=val; toast("עודכן מסך: "+key, "blue"); renderNav(); render(); }
+
+/* Workspace/Board management modals (demo) */
+function openWorkspaceModal(){
+  openModal("Workspace חדש", `
+    <div class="cols">
+      <div class="card">
+        <div class="cardHead"><div class="t">הוספת Workspace</div><span class="badge purple">PRO</span></div>
+        <div class="cardBody">
+          <div class="small">בדמו: יצירה מקומית. במוצר: מולטיטננט אמיתי.</div>
+          <input id="wsName" placeholder="שם Workspace (לדוגמה: איציק • צפון)" />
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn primary" onclick="createWorkspace()">צור</button>
+            <button class="btn" onclick="closeModal()">ביטול</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="cardHead"><div class="t">טיפ</div></div>
+        <div class="cardBody small">ל‑Exit: Workspaces/Boards מייצרים “הדבקה” ו‑LTV גבוה יותר.</div>
+      </div>
+    </div>
+  `);
+}
+function createWorkspace(){
+  const name=(document.getElementById("wsName").value||"").trim();
+  if(!name) return toast("חייבים שם", "red");
+  const id=uuid("w");
+  workspaces.unshift({id, name, tenantId:1, boards:[{id:uuid("b"), name:"CRM חדש", preset:"generic", icon:"🧩"}]});
+  ui.workspaceId=id;
+  initWorkspaceSelect();
+  switchWorkspace(id);
+  closeModal();
+}
+function openBoardModal(){
+  openModal("Board חדש", `
+    <div class="cols">
+      <div class="card">
+        <div class="cardHead"><div class="t">הוספת Board</div><span class="badge purple">PRO</span></div>
+        <div class="cardBody">
+          <input id="bName" placeholder="שם Board (לדוגמה: CRM כללי)" />
+          <select id="bPreset" style="margin-top:10px;width:100%">
+            <option value="generic">Generic</option>
+            <option value="salon">Salon</option>
+            <option value="garage">Garage</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="studio">Studio</option>
+            <option value="marketing">Marketing</option>
+          </select>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn primary" onclick="createBoard()">צור</button>
+            <button class="btn" onclick="closeModal()">ביטול</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardHead"><div class="t">מה זה Preset?</div></div>
+        <div class="cardBody small">Preset מכין מסכים/שדות/תבניות. בהמשך: AI בונה את זה אוטומטית לפי העסק.</div>
+      </div>
+    </div>
+  `);
+}
+function createBoard(){
+  const name=(document.getElementById("bName").value||"").trim()||"Board חדש";
+  const preset=document.getElementById("bPreset").value;
+  const w=currentWorkspace();
+  const b={id:uuid("b"), name, preset, icon:"🧩"};
+  w.boards.unshift(b);
+  ui.boardId=b.id;
+  renderBoards();
+  closeModal();
+  toast("Board נוסף: "+name, "purple");
+  go("dashboard");
+}
+
+/* Apply range */
+function applyRange(){ ui.range.from=document.getElementById("fromDate").value; ui.range.to=document.getElementById("toDate").value; runAuto(); render(); }
+function toggleCompare(){ ui.compare=!ui.compare; render(); }
+
+/* ===================== ROUTER / RENDER ===================== */
+function renderNav(){
+  const nav=document.getElementById("nav");
+  nav.innerHTML = NAV_ITEMS
+    .filter(n=>ui.screenConfig.show[n.key])
+    .filter(n=>canAccess(n.id))
+    .map(n=>{
+      const active = ui.page===n.id ? "active" : "";
+      return `<button class="btn navItem ${active}" onclick="go('${n.id}')">
+        <span>${n.label}</span>
+        <span class="badge blue">${n.tag}</span>
+      </button>`;
+    }).join("") + `
+      <hr style="margin:10px 0">
+      <button class="btn full" onclick="openSettings()">הגדרות עיצוב מסכים <span class="badge indigo">PRO</span></button>
+    `;
+}
+function setActiveTitle(){ 
+  const map={dashboard:"דשבורד",customers:"לקוחות",docs:"מסמכים",calendar:"יומן תורים",tasks:"משימות",expenses:"הוצאות",inventory:"מלאי",marketing:"שיווק",communications:"שיחות/מיילים",automations:"אוטומציות",reports:"דוחות"};
+  document.getElementById("pageTitle").innerText = map[ui.page] || "דשבורד";
+}
+function go(page){
+  ui.page=page;
+  document.body.classList.remove("nav-open");
+  render();
+}
+
+function render(){
+  setActiveTitle();
+  refreshBadges();
+  renderNav();
+  renderBoards();
+  initWorkspaceSelect();
+  document.getElementById("workspaceSelect").value = ui.workspaceId;
+  const w=currentWorkspace();
+  const tenant=demo.tenants.find(t=>t.id===w.tenantId)||demo.tenants[0];
+  document.getElementById("tenantTitle").innerText = tenant.name;
+  const b=currentBoard();
+  document.getElementById("contextLine").innerText = `Workspace: ${w.name} • Board: ${b.name} • תפקיד: ${ui.role}`;
+
+  // Router
+  if(ui.page==="dashboard") renderDashboard();
+  else if(ui.page==="customers") renderCustomers();
+  else if(ui.page==="docs") renderDocs();
+  else if(ui.page==="calendar") renderCalendar();
+  else if(ui.page==="tasks") renderTasks();
+  else if(ui.page==="expenses") renderExpenses();
+  else if(ui.page==="inventory") renderInventory();
+  else if(ui.page==="marketing") renderMarketing();
+  else if(ui.page==="communications") renderCommunications();
+  else if(ui.page==="automations") renderAutomations();
+  else if(ui.page==="reports") renderReports();
+  renderFloatTodo();
+  document.getElementById("floatTodo").classList.toggle("hidden", !ui.floatTodo);
+}
+window.addEventListener("resize", ()=>{ if(ui.page==="dashboard") renderDashboard(); });
+
+/* First load */
+runAuto();
+render();
+toast("Level 7 PRO נטען • נסה Add Widget / AI Builder / ⌘K", "blue");
+</script>
+</body>
+</html>
