@@ -1824,5 +1824,22 @@ toast("Level 7 PRO נטען • נסה Add Widget / AI Builder / ⌘K", "blue");
 <script src="./ai-engine.js"></script>
 <script src="./ai-ui.js"></script>
 <script src="./data-store.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("btnResetData");
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+      const ok = confirm("למחוק את כל הנתונים? (לקוחות/מסמכים/הוצאות/משימות)");
+      if (!ok) return;
+
+      // מוחק נתונים, משאיר היסטוריה (Audit) כרגע
+      DataStore.resetData({ wipeAudit: false });
+
+      alert("נמחק ✅ רענון…");
+      location.reload();
+    });
+  });
+  </script>
 </body>
 </html>
