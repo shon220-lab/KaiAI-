@@ -1,4 +1,4 @@
-/* data-store.js — KaiAI Local Data Store + Audit Log (ללא שרת)
+א /* data-store.js — KaiAI Local Data Store + Audit Log (ללא שרת)
    עובד עם LocalStorage. מאפשר CRUD בסיסי + מחיקה חכמה + איפוס + היסטוריית פעולות.
    שים את הקובץ בשורש הריפו וטען אותו ב-index.html לפני </body>:
    <script src="./data-store.js"></script>
@@ -550,3 +550,142 @@
   };
 })();
 ```0
+/* =========================
+   DataStore - Universal CRUD
+   ========================= */
+
+(function(){
+  // אם כבר יש לך DataStore, נרחיב אותו. אם לא - ניצור.
+  const DS = window.DataStore || (window.DataStore = {});
+
+  // שנה פה את השם של ה-root-key אם אצלך זה שונה
+  const ROOT_KEY = DS.ROOT_KEY || "kai_ai_level7_store_v1";
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(ROOT_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function save(db){
+    localStorage.setItem(ROOT_KEY, JSON.stringify(db));
+  }
+
+  // ננסה למשוך את המבנה הקיים אצלך
+  DS.getDB = DS.getDB || function(){
+    let db = load();
+    if(!db){
+      db = {
+        meta: { createdAt: Date.now(), version: 1 },
+        audit: [],
+        customers: [],
+        docs: [],
+        invoices: [],
+        quotes: [],
+        tasks: [],
+        expenses: [],
+        inventory: [],
+        automations: [],
+        reports: [],
+        settings: {}
+      };
+      save(db);
+    }
+    return db;
+  };
+
+  DS.saveDB = DS.saveDB || save;
+
+  DS.audit = DS.audit || function(action, entity, id, extra){
+    const db = DS.getDB();
+    db.audit = db.audit || [];
+    db.audit.unshift({
+      ts: Date.now(),
+      action,
+      entity,
+      id,
+      extra: extra || {}
+    });
+    // מגביל יומן כדי לא להתנפח
+    db.audit = db.audit.slice(0, 500);
+    save(db);
+  };
+
+  // מיפוי שמות ישויות -> שם מערך במסד
+  const ENTITY_MAP = {
+    customer: "customers",
+    customers: "customers",
+
+    doc: "docs",
+    docs: "docs",
+
+    invoice: "invoices",
+    invoices: "invoices",
+
+    quote: "quotes",
+    quotes: "quotes",
+
+    task: "tasks",
+    tasks: "tasks",
+
+    expense: "expenses",
+    expenses: "expenses",
+
+    item: "inventory",
+    inventory: "inventory",
+
+    automation: "automations",
+    automations: "automations",
+
+    report: "reports",
+    reports: "reports"
+  };
+
+  function resolveCollection(entity){
+    const key = ENTITY_MAP[String(entity || "").toLowerCase()];
+    if(!key) throw new Error("Unknown entity: " + entity);
+    return key;
+  }
+
+  DS.deleteEntity = function(entity, id, opts){
+    const db = DS.getDB();
+    const key = resolveCollection(entity);
+    db[key] = db[key] || [];
+    const before = db[key].length;
+    db[key] = db[key].filter(x => String(x.id) !== String(id));
+    const after = db[key].length;
+
+    // אם נמחק משהו
+    if(after !== before){
+      DS.audit("delete", key, id, { opts: opts || {} });
+      save(db);
+      return true;
+    }
+    return false;
+  };
+
+  DS.resetAll = function(options){
+    const db = DS.getDB();
+    const wipeAudit = !!(options && options.wipeAudit);
+
+    Object.keys(db).forEach(k=>{
+      if(k === "meta" || k === "settings") return;
+      if(k === "audit" && !wipeAudit) return;
+      if(Array.isArray(db[k])) db[k] = [];
+    });
+
+    DS.audit("resetAll", "system", "ALL", { wipeAudit });
+    save(db);
+  };
+
+  // קצר ונוח: מחיקות ספציפיות
+  DS.deleteCustomer = (id)=>DS.deleteEntity("customers", id);
+  DS.deleteDoc      = (id)=>DS.deleteEntity("docs", id);
+  DS.deleteTask     = (id)=>DS.deleteEntity("tasks", id);
+  DS.deleteExpense  = (id)=>DS.deleteEntity("expenses", id);
+  DS.deleteInvoice  = (id)=>DS.deleteEntity("invoices", id);
+  DS.deleteQuote    = (id)=>DS.deleteEntity("quotes", id);
+  DS.deleteAutomation=(id)=>DS.deleteEntity("automations", id);
+  DS.deleteReport   = (id)=>DS.deleteEntity("reports", id);
+
+})();
