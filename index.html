@@ -1841,5 +1841,69 @@ toast("Level 7 PRO נטען • נסה Add Widget / AI Builder / ⌘K", "blue");
     });
   });
   </script>
+  <script>
+/* =========================
+   Universal Delete Buttons UI
+   ========================= */
+
+// מיפוי מהדום: איזה attribute אומר לנו איזה רשומה זו
+// תוסיף פה עוד אם צריך
+const DELETE_SELECTORS = [
+  { attr: "data-customer-id", entity: "customers" },
+  { attr: "data-doc-id",      entity: "docs" },
+  { attr: "data-invoice-id",  entity: "invoices" },
+  { attr: "data-quote-id",    entity: "quotes" },
+  { attr: "data-task-id",     entity: "tasks" },
+  { attr: "data-expense-id",  entity: "expenses" },
+  { attr: "data-item-id",     entity: "inventory" },
+  { attr: "data-automation-id", entity: "automations" },
+  { attr: "data-report-id",   entity: "reports" }
+];
+
+function ensureDeleteBtn(container, entity, id){
+  if(container.querySelector(".kai-del-btn")) return;
+
+  const btn = document.createElement("button");
+  btn.className = "btn danger kai-del-btn";
+  btn.type = "button";
+  btn.textContent = "🗑️";
+  btn.style.marginInlineStart = "8px";
+  btn.onclick = () => {
+    const ok = confirm(`למחוק ${entity} #${id}?`);
+    if(!ok) return;
+    const done = DataStore.deleteEntity(entity, id);
+    if(!done) alert("לא נמצא למחיקה");
+    location.reload();
+  };
+
+  container.appendChild(btn);
+}
+
+function injectAllDeletes(){
+  DELETE_SELECTORS.forEach(({attr, entity})=>{
+    document.querySelectorAll(`[${attr}]`).forEach(node=>{
+      const id = node.getAttribute(attr);
+      ensureDeleteBtn(node, entity, id);
+    });
+  });
+}
+
+// רץ כל הזמן כדי לתפוס רינדורים מחדש
+setInterval(injectAllDeletes, 800);
+
+// כפתור “מחק הכל” אופציונלי (אם תיצור כפתור עם id הזה)
+document.addEventListener("DOMContentLoaded", ()=>{
+  const resetBtn = document.getElementById("btnResetAll");
+  if(resetBtn){
+    resetBtn.addEventListener("click", ()=>{
+      const ok = confirm("למחוק את כל הנתונים? (הכל)");
+      if(!ok) return;
+      DataStore.resetAll({ wipeAudit:false });
+      alert("נמחק ✅");
+      location.reload();
+    });
+  }
+});
+  </script>
 </body>
 </html>
